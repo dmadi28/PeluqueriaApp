@@ -19,7 +19,7 @@ public class AdaptadorCitas extends ArrayAdapter<Cita> {
     public AdaptadorCitas(Context context, List<Cita> citas) {
         super(context, R.layout.listview_citas, citas);
         // Inicializar el formato decimal con dos decimales y símbolo de euro
-        decimalFormat = new DecimalFormat("#,##0.00€");
+        decimalFormat = new DecimalFormat("0.00€");
         decimalFormat.setDecimalSeparatorAlwaysShown(true);
     }
 

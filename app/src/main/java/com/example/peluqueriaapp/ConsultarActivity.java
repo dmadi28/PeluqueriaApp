@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,6 +19,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -32,10 +34,15 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
     TextView titulo;
     ListView lvCitas;
     LinearLayout home, citas, info, logout;
+    SwipeRefreshLayout swipeRefreshLayout;
     String usuarioActivo = "";
 
     FirebaseManager firebaseManager;
     GoogleSignInClient mGoogleSignInClient;
+
+    // Crear un Handler para manejar el refresco automático
+    private final Handler handler = new Handler();
+    private static final long REFRESH_INTERVAL = 60 * 1000; // 60 segundos
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +63,8 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
         setupOnClickListeners();
         // Configurar OnItemClickListener para el ListView
         setupListViewClickListener();
+        // Agregar listener para el gesto de deslizamiento para refrescar
+        setupRefreshListener();
         // Crear el adaptador inicial para el ListView
         crearAdaptador();
     }
@@ -71,6 +80,8 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
         logout = findViewById(R.id.logout);
 
         lvCitas = findViewById(R.id.lvCitas);
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        startAutoRefresh();
     }
 
     private void updateTitle() {
@@ -128,6 +139,17 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
+    private void setupRefreshListener() {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                crearAdaptador();
+                // Deshabilitar el indicador de actualización una vez que la actualización esté completa
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+    }
+
     private void showConfirmationDialog(Cita cita) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ConsultarActivity.this);
         builder.setTitle("Anular Cita");
@@ -172,6 +194,19 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
+    private void startAutoRefresh() {
+        // Utilizar el Handler para ejecutar la actualización periódicamente
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Realizar la actualización de datos
+                crearAdaptador();
+                // Programar el siguiente refresco
+                handler.postDelayed(this, REFRESH_INTERVAL);
+            }
+        }, REFRESH_INTERVAL);
+    }
+
     public static void openDrawer(DrawerLayout drawerLayout) {
         drawerLayout.openDrawer(GravityCompat.START);
     }
@@ -201,5 +236,11 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
     protected void onPause() {
         super.onPause();
         closeDrawer(drawerLayout);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacksAndMessages(null);
     }
 }

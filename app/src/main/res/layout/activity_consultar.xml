@@ -26,14 +26,22 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="16dp"/>
 
-        <!-- ListView para mostrar las citas -->
-        <ListView
-            android:id="@+id/lvCitas"
+        <!-- SwipeRefreshLayout para permitir la actualización -->
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_height="wrap_content">
+
+            <!-- ListView para mostrar las citas -->
+            <ListView
+                android:id="@+id/lvCitas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"/>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>
 

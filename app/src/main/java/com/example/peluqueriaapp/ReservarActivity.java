@@ -1,15 +1,22 @@
 package com.example.peluqueriaapp;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,10 +44,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class ReservarActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -55,6 +66,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     float precioDeServicio;
     String fechaSeleccionada = "";
     String horaSeleccionada = "";
+    Calendar fechaHoraInicio;
     String anotaciones = "";
     Spinner spinnerServicios;
     DatePicker calendario;
@@ -65,6 +77,8 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
     FirebaseManager firebaseManager;
     GoogleSignInClient mGoogleSignInClient;
+    PendingIntent pendingIntent;
+    final String CHANNEL_ID = "canal";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,9 +211,20 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void handleButtonReservar() {
-        if (horaSeleccionada.isEmpty()) {
-            Toast.makeText(this, "Por favor, seleccione una hora.", Toast.LENGTH_SHORT).show();
+        if (horaSeleccionada.isEmpty() || fechaSeleccionada.isEmpty()) {
+            Toast.makeText(this, "Por favor, seleccione una fecha y hora.", Toast.LENGTH_SHORT).show();
             return;
+        }
+
+        // Obtener la fecha y hora seleccionadas
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        String fechaHoraInicioString = fechaSeleccionada + " " + horaSeleccionada;
+        try {
+            Date fechaHoraInicioDate = dateFormat.parse(fechaHoraInicioString);
+            fechaHoraInicio = Calendar.getInstance();
+            fechaHoraInicio.setTime(fechaHoraInicioDate);
+        } catch (ParseException e) {
+            Log.e("ReservarActivity", "Error al convertir fecha y hora de inicio: " + e.getMessage());
         }
 
         anotaciones = etAnotaciones.getText().toString();
@@ -208,16 +233,16 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
         firebaseManager.registrarCita(nuevaCita);
 
-        Toast.makeText(this, "Cita reservada con éxito.", Toast.LENGTH_SHORT).show();
-        mostrarNotificacionReserva();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            crearCanalNotificacion();
+        } else {
+            mostrarNotificacionReserva();
+        }
+
+        agregarEventoCalendario();
+        configurarAlarmas(fechaHoraInicio);
 
         limpiarCampos();
-
-        radioGroupHoras.removeAllViews();
-        findViewById(R.id.cvHora).setVisibility(View.GONE);
-        findViewById(R.id.textViewServicio).setVisibility(View.VISIBLE);
-        findViewById(R.id.spinnerServicios).setVisibility(View.VISIBLE);
-        findViewById(R.id.cvCalendario).setVisibility(View.VISIBLE);
     }
 
     private void setupSpinnerServicios() {
@@ -276,7 +301,22 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
         calendario.setMinDate(calendar.getTimeInMillis());
 
-        calendario.init(añoActual, mesActual, diaActual, null);
+        // Desactivar domingos y lunes
+        calendario.init(añoActual, mesActual, diaActual, new DatePicker.OnDateChangedListener() {
+            @Override
+            public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar selectedDate = Calendar.getInstance();
+                selectedDate.set(year, monthOfYear, dayOfMonth);
+
+                // Verificar si la fecha seleccionada es domingo o lunes
+                int dayOfWeek = selectedDate.get(Calendar.DAY_OF_WEEK);
+                if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.MONDAY) {
+                    // Establecer la fecha seleccionada en el siguiente día
+                    selectedDate.add(Calendar.DAY_OF_MONTH, 1);
+                    view.updateDate(selectedDate.get(Calendar.YEAR), selectedDate.get(Calendar.MONTH), selectedDate.get(Calendar.DAY_OF_MONTH));
+                }
+            }
+        });
     }
 
     private void setupRadioGroupHoras() {
@@ -300,6 +340,12 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         spinnerServicios.setSelection(0);
         radioGroupHoras.clearCheck();
         etAnotaciones.setText("");
+
+        radioGroupHoras.removeAllViews();
+        findViewById(R.id.cvHora).setVisibility(View.GONE);
+        findViewById(R.id.textViewServicio).setVisibility(View.VISIBLE);
+        findViewById(R.id.spinnerServicios).setVisibility(View.VISIBLE);
+        findViewById(R.id.cvCalendario).setVisibility(View.VISIBLE);
     }
 
     private void mostrarHorasDisponibles(List<String> horasReservadas, Calendar fechaElegida) {
@@ -353,44 +399,101 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void crearCanalNotificacion() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence nombreCanal = "Reservas";
-            String descripcionCanal = "Canal para notificaciones de reservas";
-            int importancia = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel canal = new NotificationChannel("com.example.peluqueriaapp.reservas", nombreCanal, importancia);
-            canal.setDescription(descripcionCanal);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(canal);
+        CharSequence nombreCanal = "Reservas";
+        int importancia = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel canal = new NotificationChannel(CHANNEL_ID, nombreCanal, importancia);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.createNotificationChannel(canal);
+        mostrarNotificacionReserva();
+    }
+
+    @SuppressLint("MissingPermission")
+    private void mostrarNotificacionReserva() {
+        // Construir notificación
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.baseline_notifications_24)
+                .setContentTitle("Peluquería Lucía")
+                .setContentText("Reserva confirmada!")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setDefaults(Notification.DEFAULT_ALL)
+                .setAutoCancel(true);
+
+        // PendingIntent nulo para que al tocar la notificación no haga nada
+        PendingIntent pendingIntent = null;
+
+        builder.setContentIntent(pendingIntent);
+
+        // Mostrar la notificación
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(1, builder.build());
+    }
+
+    private void agregarEventoCalendario() {
+        if (fechaHoraInicio != null) {
+            Calendar fechaHoraFin = (Calendar) fechaHoraInicio.clone();
+            fechaHoraFin.add(Calendar.HOUR_OF_DAY, 1); // La cita finalizará por defecto 1 hora después de la hora de inicio
+
+            DecimalFormat decimalFormat = new DecimalFormat("0.00€");
+            String precioFormateado = decimalFormat.format(precioDeServicio);
+
+            String descripcionEvento = "Reserva confirmada en Salón Estética y Peluquería Lucía García.";
+            if (!servicioSeleccionado.isEmpty()) {
+                descripcionEvento += "\nServicio: " + servicioSeleccionado + "\nPrecio: " + precioFormateado;
+            }
+            if (!anotaciones.isEmpty()) {
+                descripcionEvento += "\nAnotaciones: " + anotaciones;
+            }
+
+            Intent intent = new Intent(Intent.ACTION_EDIT)
+                    .setType("vnd.android.cursor.item/event")
+                    .putExtra(CalendarContract.Events.TITLE, "Reserva de peluquería")
+                    .putExtra(CalendarContract.Events.DESCRIPTION, descripcionEvento)
+                    .putExtra(CalendarContract.Events.EVENT_LOCATION, "Salón Estética y Peluquería Lucía García")
+                    .putExtra(CalendarContract.Events.ALL_DAY, false)
+                    .putExtra(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID())
+                    .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, fechaHoraInicio.getTimeInMillis())
+                    .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, fechaHoraFin.getTimeInMillis());
+
+            startActivity(intent);
+
+        } else {
+            Toast.makeText(this, "No se ha seleccionado una fecha y hora para agregar al calendario.", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void mostrarNotificacionReserva() {
-        crearCanalNotificacion();
+    private void configurarAlarmas(Calendar fechaHoraInicio) {
+        // Obtener una instancia del AlarmManager
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "com.example.peluqueriaapp.reservas");
-        int icono = R.mipmap.ic_launcher;
-        Intent intent = new Intent(ReservarActivity.this, LoginActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(ReservarActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        // Configurar la alarma para un día antes de la cita
+        Calendar horaAlarmaDiaAntes = (Calendar) fechaHoraInicio.clone();
+        horaAlarmaDiaAntes.add(Calendar.DAY_OF_MONTH, -1);
 
-        mBuilder = mBuilder.setContentIntent(pendingIntent)
-                .setSmallIcon(icono)
-                .setContentTitle("Peluquería Lucía")
-                .setContentText("Reserva confirmada!")
-                .setVibrate(new long[]{100, 250, 100, 500})
-                .setAutoCancel(true);
+        // Crear un intent para la clase BroadcastReceiver que manejará la alarma del día anterior
+        Intent intentDiaAntes = new Intent(this, AlarmReceiver.class);
+        intentDiaAntes.putExtra("mensaje", "¡Mañana tiene una cita agendada! No lo olvide.");
+        intentDiaAntes.putExtra("canal", CHANNEL_ID);
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        notificationManager.notify(1, mBuilder.build());
+        // Crear un PendingIntent para la alarma del día anterior
+        PendingIntent pendingIntentDiaAntes = PendingIntent.getBroadcast(this, 0, intentDiaAntes, PendingIntent.FLAG_IMMUTABLE);
+
+        // Configurar la alarma del día anterior con el tiempo calculado
+        alarmManager.set(AlarmManager.RTC_WAKEUP, horaAlarmaDiaAntes.getTimeInMillis(), pendingIntentDiaAntes);
+
+        // Configurar la alarma para una hora antes de la cita
+        Calendar horaAlarmaHoraAntes = (Calendar) fechaHoraInicio.clone();
+        horaAlarmaHoraAntes.add(Calendar.HOUR_OF_DAY, -1);
+
+        // Crear un intent para la clase BroadcastReceiver que manejará la alarma de una hora antes
+        Intent intentHoraAntes = new Intent(this, AlarmReceiver.class);
+        intentHoraAntes.putExtra("mensaje", "¡Su cita comenzará en 1 hora! " + servicioSeleccionado);
+        intentHoraAntes.putExtra("canal", CHANNEL_ID);
+
+        // Crear un PendingIntent para la alarma de una hora antes
+        PendingIntent pendingIntentHoraAntes = PendingIntent.getBroadcast(this, 1, intentHoraAntes, PendingIntent.FLAG_IMMUTABLE);
+
+        // Configurar la alarma de una hora antes con el tiempo calculado
+        alarmManager.set(AlarmManager.RTC_WAKEUP, horaAlarmaHoraAntes.getTimeInMillis(), pendingIntentHoraAntes);
     }
 
     public static void openDrawer(DrawerLayout drawerLayout) {
@@ -399,7 +502,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
     // Método para cerrar el DrawerLayout si está abierto
     public static void closeDrawer(DrawerLayout drawerLayout) {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
     }

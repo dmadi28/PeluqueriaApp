@@ -35,6 +35,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         firebaseManager = new FirebaseManager();
 
+        firebaseManager.eliminarCitasPasadas();
+
         // Asignar las vistas de los layout a los elementos
         setupViews();
         // Configurar OnClickListener de los botones

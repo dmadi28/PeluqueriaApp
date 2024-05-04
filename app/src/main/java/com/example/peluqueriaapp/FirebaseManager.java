@@ -29,9 +29,14 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class FirebaseManager {
@@ -440,4 +445,63 @@ public class FirebaseManager {
         void onFailure(String errorMessage);
     }
 
+    public void eliminarCitasPasadas() {
+        // Obtener la fecha y hora actual
+        Calendar fechaHoraActual = Calendar.getInstance();
+
+        // Consultar los documentos de la colección "citas"
+        db.collection("citas")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                // Obtener la fecha y hora de la cita
+                                String fechaCita = document.getString("fecha");
+                                String horaCita = document.getString("hora");
+
+                                // Convertir la fecha y hora de la cita a objetos Calendar
+                                Calendar fechaHoraCita = convertirFechaHora(fechaCita, horaCita);
+
+                                // Sumar una hora a la fecha y hora de la cita
+                                fechaHoraCita.add(Calendar.HOUR_OF_DAY, 1);
+
+                                // Verificar si la fecha y hora actual es posterior a la fecha y hora de la cita + 2 horas
+                                if (fechaHoraActual.after(fechaHoraCita)) {
+                                    // Eliminar la cita
+                                    document.getReference().delete()
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Log.d(TAG, "Cita eliminada correctamente");
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Log.e(TAG, "Error al eliminar la cita: " + e.getMessage());
+                                                }
+                                            });
+                                }
+                            }
+                        } else {
+                            Log.e(TAG, "Error al obtener las citas: ", task.getException());
+                        }
+                    }
+                });
+    }
+
+    // Método para convertir la fecha y hora de String a Calendar
+    private Calendar convertirFechaHora(String fecha, String hora) {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        try {
+            Date date = sdf.parse(fecha + " " + hora);
+            calendar.setTime(date);
+        } catch (ParseException e) {
+            Log.e(TAG, "Error al convertir la fecha y hora: " + e.getMessage());
+        }
+        return calendar;
+    }
 }
