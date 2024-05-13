@@ -11,17 +11,16 @@
         android:layout_height="176dp"
         android:orientation="vertical"
         android:gravity="bottom"
-        android:paddingLeft="16dp"
-        android:paddingBottom="20dp"
-        android:paddingTop="40dp"
         android:background="@drawable/header_bkg"
         android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="423dp"
+            android:layout_height="199dp"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
             android:src="@drawable/icon" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -38,7 +37,7 @@
             android:text="Reservar citas"
             android:textColor="@color/lavender"
             android:textSize="20sp"
-            android:drawableLeft="@drawable/baseline_home_24"
+            android:drawableLeft="@drawable/ic_home"
             android:drawablePadding="8dp"/>
 
     </LinearLayout>
@@ -57,7 +56,7 @@
             android:text="Consultar citas"
             android:textColor="@color/lavender"
             android:textSize="20sp"
-            android:drawableLeft="@drawable/baseline_list_24"
+            android:drawableLeft="@drawable/ic_list"
             android:drawablePadding="8dp"/>
 
     </LinearLayout>
@@ -76,7 +75,26 @@
             android:text="Info de contacto"
             android:textColor="@color/lavender"
             android:textSize="20sp"
-            android:drawableLeft="@drawable/baseline_info_24"
+            android:drawableLeft="@drawable/ic_info"
+            android:drawablePadding="8dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/qr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Código de descuento"
+            android:textColor="@color/lavender"
+            android:textSize="20sp"
+            android:drawableLeft="@drawable/ic_scanner"
             android:drawablePadding="8dp"/>
 
     </LinearLayout>
@@ -101,9 +119,19 @@
             android:text="Log-out"
             android:textColor="@color/red"
             android:textSize="20sp"
-            android:drawableLeft="@drawable/baseline_exit_to_app_24"
+            android:drawableLeft="@drawable/ic_exit"
             android:drawablePadding="8dp"/>
 
     </LinearLayout>
 
+    <!-- Designed By -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="250dp"
+        android:text="Diseñado por David Maestre Díaz ®"
+        android:textColor="@color/lavender"
+        android:textSize="16sp"/>
 </LinearLayout>

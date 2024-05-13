@@ -3,17 +3,11 @@ package com.example.peluqueriaapp;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CalendarContract;
@@ -34,7 +28,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
@@ -58,8 +51,8 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     DrawerLayout drawerLayout;
     ImageView menu;
     TextView titulo;
-    LinearLayout home, citas, info, logout;
-    String[] horasDisponibles = {"9:00", "10:00", "11:00", "12:00", "13:00", "15:00", "16:00", "17:00", "18:00", "19:00"};
+    LinearLayout home, citas, info, qr, logout;
+    String[] horasDisponibles = {"10:00", "11:00", "12:00", "13:00", "15:00", "16:00", "17:00", "18:00", "19:00"};
     String usuarioActivo = "";
     String servicioSeleccionado = "";
 
@@ -77,8 +70,8 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
     FirebaseManager firebaseManager;
     GoogleSignInClient mGoogleSignInClient;
-    PendingIntent pendingIntent;
     final String CHANNEL_ID = "canal";
+    long pressedTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +112,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         home = findViewById(R.id.home);
         citas = findViewById(R.id.citas);
         info = findViewById(R.id.info);
+        qr = findViewById(R.id.qr);
         logout = findViewById(R.id.logout);
 
         spinnerServicios = findViewById(R.id.spinnerServicios);
@@ -143,6 +137,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         home.setOnClickListener(this);
         citas.setOnClickListener(this);
         info.setOnClickListener(this);
+        qr.setOnClickListener(this);
         logout.setOnClickListener(this);
         buttonSiguiente.setOnClickListener(this);
         buttonBack.setOnClickListener(this);
@@ -159,6 +154,8 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
             redirectActivity(this, ConsultarActivity.class, usuarioActivo);
         } else if (v.getId() == R.id.info) {
             redirectActivity(this, InfoActivity.class, usuarioActivo);
+        } else if (v.getId() == R.id.qr) {
+            redirectActivity(this, QrActivity.class, usuarioActivo);
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
@@ -176,7 +173,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
     private void handleButtonSiguiente() {
         if (servicioSeleccionado.isEmpty() || precioDeServicio == 0) {
-            Toast.makeText(this, "Por favor, seleccione un servicio.", Toast.LENGTH_SHORT).show();
+            mostrarToast("Por favor, seleccione un servicio.");
             return;
         }
 
@@ -212,7 +209,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
     private void handleButtonReservar() {
         if (horaSeleccionada.isEmpty() || fechaSeleccionada.isEmpty()) {
-            Toast.makeText(this, "Por favor, seleccione una fecha y hora.", Toast.LENGTH_SHORT).show();
+            mostrarToast("Por favor, seleccione una fecha y hora.");
             return;
         }
 
@@ -295,28 +292,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
     private void setupCalendario() {
         Calendar calendar = Calendar.getInstance();
-        int añoActual = calendar.get(Calendar.YEAR);
-        int mesActual = calendar.get(Calendar.MONTH);
-        int diaActual = calendar.get(Calendar.DAY_OF_MONTH);
-
         calendario.setMinDate(calendar.getTimeInMillis());
-
-        // Desactivar domingos y lunes
-        calendario.init(añoActual, mesActual, diaActual, new DatePicker.OnDateChangedListener() {
-            @Override
-            public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Calendar selectedDate = Calendar.getInstance();
-                selectedDate.set(year, monthOfYear, dayOfMonth);
-
-                // Verificar si la fecha seleccionada es domingo o lunes
-                int dayOfWeek = selectedDate.get(Calendar.DAY_OF_WEEK);
-                if (dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.MONDAY) {
-                    // Establecer la fecha seleccionada en el siguiente día
-                    selectedDate.add(Calendar.DAY_OF_MONTH, 1);
-                    view.updateDate(selectedDate.get(Calendar.YEAR), selectedDate.get(Calendar.MONTH), selectedDate.get(Calendar.DAY_OF_MONTH));
-                }
-            }
-        });
     }
 
     private void setupRadioGroupHoras() {
@@ -353,32 +329,58 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
         Calendar fechaActual = Calendar.getInstance();
 
-        if (horasReservadas.size() == horasDisponibles.length) {
-            findViewById(R.id.textNoReservas).setVisibility(View.VISIBLE);
-            etAnotaciones.setVisibility(View.GONE);
-            buttonReservar.setVisibility(View.GONE);
-        } else {
-            findViewById(R.id.textNoReservas).setVisibility(View.GONE);
-            etAnotaciones.setVisibility(View.VISIBLE);
-            buttonReservar.setVisibility(View.VISIBLE);
-
+        // Verificar si el día seleccionado es sábado
+        if (fechaElegida.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+            // Iterar sobre las horas disponibles
+            boolean horasDisponiblesEncontradas = false;
             for (String hora : horasDisponibles) {
+                // Obtener la hora seleccionada
                 int horaSeleccionada = Integer.parseInt(hora.split(":")[0]);
+                // Verificar si la hora es menor o igual a 13:00 y no está reservada
+                if (horaSeleccionada <= 13 && !horasReservadas.contains(hora)) {
+                    RadioButton radioButton = new RadioButton(ReservarActivity.this);
+                    radioButton.setText(hora);
+                    radioGroupHoras.addView(radioButton);
+                    horasDisponiblesEncontradas = true;
+                }
+            }
+            // Si no se encontraron horas disponibles
+            if (!horasDisponiblesEncontradas) {
+                mostrarMensajeNoDisponibles();
+                return;
+            }
+        } else if (fechaElegida.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || fechaElegida.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
+            // Si es domingo o lunes, mostrar mensaje de no disponibles
+            mostrarMensajeNoDisponibles();
+            return;
+        } else { // Para otros días de la semana
+            if (horasReservadas.size() == horasDisponibles.length) {
+                findViewById(R.id.textNoReservas).setVisibility(View.VISIBLE);
+                etAnotaciones.setVisibility(View.GONE);
+                buttonReservar.setVisibility(View.GONE);
+            } else {
+                findViewById(R.id.textNoReservas).setVisibility(View.GONE);
+                etAnotaciones.setVisibility(View.VISIBLE);
+                buttonReservar.setVisibility(View.VISIBLE);
 
-                if (fechaElegida.get(Calendar.YEAR) == fechaActual.get(Calendar.YEAR) &&
-                        fechaElegida.get(Calendar.MONTH) == fechaActual.get(Calendar.MONTH) &&
-                        fechaElegida.get(Calendar.DAY_OF_MONTH) == fechaActual.get(Calendar.DAY_OF_MONTH)) {
-                    int horaActual = fechaActual.get(Calendar.HOUR_OF_DAY);
-                    if (horaSeleccionada > horaActual && !horasReservadas.contains(hora)) {
-                        RadioButton radioButton = new RadioButton(ReservarActivity.this);
-                        radioButton.setText(hora);
-                        radioGroupHoras.addView(radioButton);
-                    }
-                } else {
-                    if (!horasReservadas.contains(hora)) {
-                        RadioButton radioButton = new RadioButton(ReservarActivity.this);
-                        radioButton.setText(hora);
-                        radioGroupHoras.addView(radioButton);
+                for (String hora : horasDisponibles) {
+                    int horaSeleccionada = Integer.parseInt(hora.split(":")[0]);
+
+                    if (fechaElegida.get(Calendar.YEAR) == fechaActual.get(Calendar.YEAR) &&
+                            fechaElegida.get(Calendar.MONTH) == fechaActual.get(Calendar.MONTH) &&
+                            fechaElegida.get(Calendar.DAY_OF_MONTH) == fechaActual.get(Calendar.DAY_OF_MONTH)) {
+                        int horaActual = fechaActual.get(Calendar.HOUR_OF_DAY);
+                        if (horaSeleccionada > horaActual && !horasReservadas.contains(hora)) {
+                            RadioButton radioButton = new RadioButton(ReservarActivity.this);
+                            radioButton.setText(hora);
+                            radioGroupHoras.addView(radioButton);
+                        }
+                    } else {
+                        if (!horasReservadas.contains(hora)) {
+                            RadioButton radioButton = new RadioButton(ReservarActivity.this);
+                            radioButton.setText(hora);
+                            radioGroupHoras.addView(radioButton);
+                        }
                     }
                 }
             }
@@ -388,6 +390,10 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.textViewServicio).setVisibility(View.GONE);
         findViewById(R.id.spinnerServicios).setVisibility(View.GONE);
         findViewById(R.id.cvHora).setVisibility(View.VISIBLE);
+    }
+
+    private void mostrarMensajeNoDisponibles() {
+        mostrarToast("Lo sentimos, no hay reservas disponibles para ese día.");
     }
 
     public static void redirectActivity(Activity activity, Class secondActivity, String usuarioActivo) {
@@ -411,7 +417,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     private void mostrarNotificacionReserva() {
         // Construir notificación
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.baseline_notifications_24)
+                .setSmallIcon(R.drawable.ic_notifications)
                 .setContentTitle("Peluquería Lucía")
                 .setContentText("Reserva confirmada!")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -457,7 +463,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
             startActivity(intent);
 
         } else {
-            Toast.makeText(this, "No se ha seleccionado una fecha y hora para agregar al calendario.", Toast.LENGTH_SHORT).show();
+            mostrarToast("No se ha seleccionado una fecha y hora para agregar al calendario.");
         }
     }
 
@@ -496,6 +502,11 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         alarmManager.set(AlarmManager.RTC_WAKEUP, horaAlarmaHoraAntes.getTimeInMillis(), pendingIntentHoraAntes);
     }
 
+    private void mostrarToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+
     public static void openDrawer(DrawerLayout drawerLayout) {
         drawerLayout.openDrawer(GravityCompat.START);
     }
@@ -511,5 +522,20 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     protected void onPause() {
         super.onPause();
         closeDrawer(drawerLayout);
+    }
+
+    // Evita que se salga por error de la app
+    @Override
+    public void onBackPressed() {
+
+        if (pressedTime + 2000 > System.currentTimeMillis()) {
+            super.onBackPressed();
+            firebaseManager.signOut();
+            mGoogleSignInClient.signOut();
+            finish();
+        } else {
+            mostrarToast("Presiona nuevamente para salir");
+        }
+        pressedTime = System.currentTimeMillis();
     }
 }

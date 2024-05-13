@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -26,7 +25,7 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // Construir la notificación
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, canal)
-                .setSmallIcon(R.drawable.baseline_notifications_24)
+                .setSmallIcon(R.drawable.ic_notifications)
                 .setContentTitle("Recordatorio de cita")
                 .setContentText(mensaje)
                 .setContentIntent(pendingIntent)

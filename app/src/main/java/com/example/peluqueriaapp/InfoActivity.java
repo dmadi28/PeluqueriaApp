@@ -2,90 +2,225 @@ package com.example.peluqueriaapp;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
-public class InfoActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class InfoActivity extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback {
 
     DrawerLayout drawerLayout;
     ImageView menu;
     TextView titulo;
-    LinearLayout home, citas, info, logout;
+    LinearLayout home, citas, info, qr, logout;
     String usuarioActivo = "";
+    double latitud = 36.683453637083545;
+    double longitud = -4.5371127822408175;
+    ViewPager2 viewPagerPeluqueria;
+    ImageView imageEquipo;
+    SupportMapFragment mapFragment;
+    Button buttonEquipo, buttonWsp, buttonInstagram, buttonFacebook;
+    ImageButton buttonAbrirMapa;
     FirebaseManager firebaseManager;
     GoogleSignInClient mGoogleSignInClient;
+    long pressedTime;
+    private Handler handler;
+    private Runnable runnable;
+    private static final long DELAY_MS = 3000; // Tiempo de retardo entre imágenes
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_info);
+        // Inicializar el controlador de la interfaz
+        handler = new Handler();
 
+        // Obtener el usuario activo desde el intent
         usuarioActivo = getIntent().getStringExtra("usuarioActivo");
 
         firebaseManager = new FirebaseManager();
         mGoogleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN);
 
+        // Asignar las vistas de los layout a los elementos
+        setupViews();
+        // Actualizar título de ventana
+        updateTitle();
+        // Configurar OnClickListener de los botones
+        setupOnClickListeners();
+        // Configurar ViewPager
+        setupViewPager();
+    }
+
+    private void setupViews() {
         titulo = findViewById(R.id.title);
-        titulo.setText("Información de contacto");
 
         drawerLayout = findViewById(R.id.drawerLayout);
         menu = findViewById(R.id.menu);
         home = findViewById(R.id.home);
         citas = findViewById(R.id.citas);
         info = findViewById(R.id.info);
+        qr = findViewById(R.id.qr);
         logout = findViewById(R.id.logout);
 
-        menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDrawer(drawerLayout);
-            }
-        });
+        viewPagerPeluqueria = findViewById(R.id.viewPagerPeluqueria);
+        imageEquipo = findViewById(R.id.imageViewEquipo);
+        buttonAbrirMapa = findViewById(R.id.btnAbrirMapa);
+        buttonEquipo = findViewById(R.id.btnEquipo);
+        buttonWsp = findViewById(R.id.btnWhatsApp);
+        buttonInstagram = findViewById(R.id.btnInstagram);
+        buttonFacebook = findViewById(R.id.btnFacebook);
 
-        home.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                redirectActivity(InfoActivity.this, ReservarActivity.class);
-            }
-        });
+        // Inicializar el mapa
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
 
-        citas.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                redirectActivity(InfoActivity.this, ConsultarActivity.class, usuarioActivo);
-            }
-        });
+    private void updateTitle() {
+        titulo.setText("Información de contacto");
+    }
 
-        info.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                recreate();
-            }
-        });
+    private void setupOnClickListeners() {
+        menu.setOnClickListener(this);
+        home.setOnClickListener(this);
+        citas.setOnClickListener(this);
+        info.setOnClickListener(this);
+        qr.setOnClickListener(this);
+        logout.setOnClickListener(this);
+        buttonAbrirMapa.setOnClickListener(this);
+        buttonEquipo.setOnClickListener(this);
+        imageEquipo.setOnClickListener(this);
+        buttonWsp.setOnClickListener(this);
+        buttonInstagram.setOnClickListener(this);
+        buttonFacebook.setOnClickListener(this);
+    }
 
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                firebaseManager.signOut();
-                mGoogleSignInClient.signOut();
-                Intent intent = new Intent(InfoActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.menu) {
+            openDrawer(drawerLayout);
+        } else if (v.getId() == R.id.home) {
+            redirectActivity(this, ReservarActivity.class);
+        } else if (v.getId() == R.id.citas) {
+            redirectActivity(this, ConsultarActivity.class, usuarioActivo);
+        } else if (v.getId() == R.id.info) {
+            recreate();
+        } else if (v.getId() == R.id.qr) {
+            redirectActivity(this, QrActivity.class, usuarioActivo);
+        } else if (v.getId() == R.id.logout) {
+            firebaseManager.signOut();
+            mGoogleSignInClient.signOut();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            finish();
+        } else if (v.getId() == R.id.btnAbrirMapa) {
+            openMaps();
+        } else if (v.getId() == R.id.btnEquipo) {
+            // Mostrar carrusel de información del equipo
+            if (imageEquipo.getVisibility() == View.VISIBLE) {
+                imageEquipo.setVisibility(View.GONE);
+            } else {
+                imageEquipo.setVisibility(View.VISIBLE);
             }
-        });
+        } else if (v.getId() == R.id.imageViewEquipo) {
+            // Abrir post Equipo
+            openUrl("https://www.instagram.com/p/C4JErsqI7aK/");
+        } else if (v.getId() == R.id.btnWhatsApp) {
+            // Abrir WhatsApp
+            openUrl("https://api.whatsapp.com/send?phone=657129163");
+        } else if (v.getId() == R.id.btnInstagram) {
+            // Abrir Instagram
+            openUrl("https://www.instagram.com/salondebelleza_luciagarcia/");
+        } else if (v.getId() == R.id.btnFacebook) {
+            // Abrir Facebook
+            openUrl("https://m.facebook.com/people/Sal%C3%B3n-de-Belleza-y-Est%C3%A9tica-Luc%C3%ADa-Garc%C3%ADa/100063668197457/");
+        }
+    }
+
+    private void setupViewPager() {
+        // Lista de IDs de recursos de imágenes de la Peluquería
+        List<Integer> imagenesPeluqueria = new ArrayList<>();
+        for (int i = 1; i <= 10; i++) {
+            int resourceId = getResources().getIdentifier("carrusel" + i, "drawable", getPackageName());
+            imagenesPeluqueria.add(resourceId);
+        }
+        // Crear un adaptador para el ViewPager de la Peluquería
+        ViewPager2Adapter adapterPeluqueria = new ViewPager2Adapter(imagenesPeluqueria);
+        // Establecer el adaptador en el ViewPager de la Peluquería
+        viewPagerPeluqueria.setAdapter(adapterPeluqueria);
+        // Iniciar el auto-scroll de las imágenes de la Peluquería
+        startAutoScroll(imagenesPeluqueria);
+    }
+
+    private void startAutoScroll(List<Integer> imagenes) {
+        if (runnable == null) {
+            runnable = new Runnable() {
+                public void run() {
+                    int position = viewPagerPeluqueria.getCurrentItem();
+                    position = position == imagenes.size() - 1 ? 0 : position + 1;
+                    viewPagerPeluqueria.setCurrentItem(position, true);
+                    handler.postDelayed(this, DELAY_MS);
+                }
+            };
+        }
+        handler.postDelayed(runnable, DELAY_MS);
+    }
+
+    private void openUrl(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        startActivity(intent);
+    }
+
+    private void openMaps() {
+        // Crear URI con las coordenadas
+        Uri gmmIntentUri = Uri.parse("geo:" + latitud + "," + longitud + "?q=Salón Estética y Peluquería Lucía García");
+
+        // Crear un intent para abrir Google Maps con las coordenadas
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+
+        // Verificar si la aplicación de Google Maps está instalada
+        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+            startActivity(mapIntent);
+        } else {
+            mostrarToast("No se encontró la aplicación de Google Maps.");
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        // Marcador de la peluquería
+        LatLng peluqueriaLatLng = new LatLng(latitud, longitud); // Coordenadas de la peluquería
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(peluqueriaLatLng, 20));
+    }
+
+    private void mostrarToast(String mensaje) {
+        Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
     }
 
     public static void openDrawer(DrawerLayout drawerLayout) {
@@ -93,7 +228,7 @@ public class InfoActivity extends AppCompatActivity {
     }
 
     public static void closeDrawer(DrawerLayout drawerLayout) {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         }
     }
@@ -113,10 +248,24 @@ public class InfoActivity extends AppCompatActivity {
         activity.finish();
     }
 
-
     @Override
     protected void onPause() {
         super.onPause();
         closeDrawer(drawerLayout);
+    }
+
+    // Evita que se salga por error de la app
+    @Override
+    public void onBackPressed() {
+
+        if (pressedTime + 2000 > System.currentTimeMillis()) {
+            super.onBackPressed();
+            firebaseManager.signOut();
+            mGoogleSignInClient.signOut();
+            finish();
+        } else {
+            mostrarToast("Presiona nuevamente para salir");
+        }
+        pressedTime = System.currentTimeMillis();
     }
 }

@@ -12,6 +12,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -129,6 +130,7 @@ public class FirebaseManager {
         return null;
     }
 
+    // Método para registrar una cita en la base de datos
     public void registrarCita(Cita cita) {
         // Obtener la referencia de la colección "citas" en Firestore
         CollectionReference citasRef = db.collection("citas");
@@ -153,6 +155,7 @@ public class FirebaseManager {
         void onUserNameReceived(String userName);
     }
 
+    // Método para obtener de la base de datos el nombre del usuario a partir del email
     public void getCurrentUserName(String email, final UserNameCallback callback) {
         db.collection("usuarios").document(email)
                 .get()
@@ -187,6 +190,7 @@ public class FirebaseManager {
         mAuth.signOut();
     }
 
+    // Método para registrar al usuario en los usuarios de Firebase y por ende, en la lista de usuarios de la base de datos
     public void registerUser(final Context context, final String nombre, final String email, String password, final String telefono, final String genero) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -213,6 +217,7 @@ public class FirebaseManager {
                 });
     }
 
+    // Método para agregar a la base de datos un usuario cuando se logea desde la app
     private void agregarDatosUsuarioFirestore(final Context context, String nombre, String email, String telefono, String genero) {
         // Crear un nuevo documento con un ID único generado automáticamente
         Map<String, Object> usuario = new HashMap<>();
@@ -241,6 +246,7 @@ public class FirebaseManager {
                 });
     }
 
+    // Método para agregar a la base de datos un usuario cuando se logea con Google
     private void agregarDatosGoogleFirestore(String email) {
         // Crear un nuevo documento con un ID igual al email
         Map<String, Object> usuario = new HashMap<>();
@@ -311,6 +317,7 @@ public class FirebaseManager {
         void onError(String errorMessage);
     }
 
+    // Método para verificar las horas disponibles en una fecha
     public void verificarCitasPorFecha(String fecha, CitasPorFechaCallback callback) {
         // Consulta para obtener documentos de citas con la fecha proporcionada
         Query query = db.collection("citas").whereEqualTo("fecha", fecha);
@@ -368,6 +375,7 @@ public class FirebaseManager {
         void onError(String errorMessage);
     }
 
+    // Método para buscar una cita a partir de la pinchada en el listView
     public void buscarCitaPorUsuarioFechaHora(Cita cita, final CitaCallback callback) {
         // Realizar una consulta para encontrar la cita con los datos proporcionados
         CollectionReference citasRef = db.collection("citas");
@@ -399,6 +407,7 @@ public class FirebaseManager {
         void onError(String errorMessage);
     }
 
+    // Método para eliminar una cita manualmente
     public void eliminarCita(Cita cita, final Callback callback) {
         // Realizar una consulta para encontrar la cita con los datos proporcionados
         CollectionReference citasRef = db.collection("citas");
@@ -445,6 +454,7 @@ public class FirebaseManager {
         void onFailure(String errorMessage);
     }
 
+    // Método para eliminar citas que han pasado ya en el tiempo
     public void eliminarCitasPasadas() {
         // Obtener la fecha y hora actual
         Calendar fechaHoraActual = Calendar.getInstance();
@@ -503,5 +513,83 @@ public class FirebaseManager {
             Log.e(TAG, "Error al convertir la fecha y hora: " + e.getMessage());
         }
         return calendar;
+    }
+
+    // Método para crear un nuevo código de desuento
+    public void crearCodigo(String porcentaje, String fechaExpiracion) {
+        // Crear un nuevo documento en la colección "codigos" con un ID autogenerado
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> codigo = new HashMap<>();
+        codigo.put("porcentaje", porcentaje);
+        codigo.put("fechaExpiracion", fechaExpiracion);
+
+        db.collection("codigos")
+                .add(codigo)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d(TAG, "Código de descuento generado con ID: " + documentReference.getId());
+                })
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error al generar el código", e);
+                });
+    }
+
+    // Método para comprobar la existencia del código QR en la base de datos
+    public void comprobarExistenciaCodigoQR(String porcentaje, String fechaExpiracion, OnCodigoQRComprobadoListener listener) {
+
+        if (porcentaje != null && fechaExpiracion != null) {
+            // Consultar la base de datos para verificar la existencia del código QR
+            db.collection("codigos")
+                    .whereEqualTo("porcentaje", porcentaje)
+                    .whereEqualTo("fechaExpiracion", fechaExpiracion)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            // Verificar si hay algún documento que cumpla con los criterios
+                            boolean codigoValido = !task.getResult().isEmpty();
+                            listener.onCodigoQRComprobado(codigoValido);
+                        } else {
+                            // En caso de error, considerar el código QR como inválido
+                            listener.onCodigoQRComprobado(false);
+                            Log.e("FirebaseManager", "Error al comprobar la existencia del código QR:", task.getException());
+                        }
+                    });
+        } else {
+            listener.onCodigoQRComprobado(false);
+            Log.d("FirebaseManager", "Porcentaje o fecha de expiración nulos. Código QR inválido.");
+        }
+    }
+
+    // Interfaz para manejar el resultado de la comprobación del código QR
+    public interface OnCodigoQRComprobadoListener {
+        void onCodigoQRComprobado(boolean existe);
+    }
+
+    // Método para eliminar un código QR de la base de datos
+    public void eliminarCodigoQR(String porcentaje, String fechaExpiracion) {
+        db.collection("codigos")
+                .whereEqualTo("porcentaje", porcentaje)
+                .whereEqualTo("fechaExpiracion", fechaExpiracion)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            document.getReference().delete()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("FirebaseManager", "Documento eliminado correctamente");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.e("FirebaseManager", "Error al eliminar el documento", e);
+                                        }
+                                    });
+                        }
+                    } else {
+                        Log.e("FirebaseManager", "Error al obtener documentos", task.getException());
+                    }
+                });
     }
 }

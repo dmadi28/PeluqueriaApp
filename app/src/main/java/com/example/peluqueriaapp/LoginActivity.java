@@ -30,6 +30,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Sleep para simular una carga lenta de la Splash Screen
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        // Establecer el tema de la aplicación
+        setTheme(R.style.Base_Theme_NavDrawerActivity);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -75,14 +83,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Verificar que el correo electrónico y la contraseña no estén vacíos
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(LoginActivity.this, "Por favor, ingresa tu correo electrónico y contraseña", Toast.LENGTH_SHORT).show();
+            mostrarToast("Por favor, ingresa tu correo electrónico y contraseña");
             return;
         }
 
         firebaseManager.signInWithEmailAndPassword(email, password, new FirebaseManager.AuthListener() {
             @Override
             public void onAuthSuccess() {
-                Toast.makeText(LoginActivity.this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
+                mostrarToast("Inicio de sesión exitoso");
                 Intent intent = new Intent(LoginActivity.this, ReservarActivity.class);
                 startActivity(intent);
                 finish();
@@ -90,7 +98,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
             @Override
             public void onAuthFailure(String errorMessage) {
-                Toast.makeText(LoginActivity.this, "" + errorMessage, Toast.LENGTH_LONG).show();
+                mostrarToast("Inicio de sesión fallido");
             }
         });
     }
@@ -126,7 +134,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 firebaseManager.signInWithGoogle(account.getIdToken(), new FirebaseManager.AuthListener() {
                     @Override
                     public void onAuthSuccess() {
-                        Toast.makeText(LoginActivity.this, "Inicio de sesión exitoso", Toast.LENGTH_SHORT).show();
+                        mostrarToast("Inicio de sesión exitoso");
                         Intent intent = new Intent(LoginActivity.this, ReservarActivity.class);
                         startActivity(intent);
                         finish();
@@ -141,5 +149,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Log.w(TAG, "Google sign in failed", e);
             }
         }
+    }
+
+    private void mostrarToast(String mensaje) {
+        Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
     }
 }

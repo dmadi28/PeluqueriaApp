@@ -33,12 +33,13 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
     ImageView menu;
     TextView titulo;
     ListView lvCitas;
-    LinearLayout home, citas, info, logout;
+    LinearLayout home, citas, info, qr, logout;
     SwipeRefreshLayout swipeRefreshLayout;
     String usuarioActivo = "";
 
     FirebaseManager firebaseManager;
     GoogleSignInClient mGoogleSignInClient;
+    long pressedTime;
 
     // Crear un Handler para manejar el refresco automático
     private final Handler handler = new Handler();
@@ -77,6 +78,7 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
         home = findViewById(R.id.home);
         citas = findViewById(R.id.citas);
         info = findViewById(R.id.info);
+        qr = findViewById(R.id.qr);
         logout = findViewById(R.id.logout);
 
         lvCitas = findViewById(R.id.lvCitas);
@@ -93,6 +95,7 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
         home.setOnClickListener(this);
         citas.setOnClickListener(this);
         info.setOnClickListener(this);
+        qr.setOnClickListener(this);
         logout.setOnClickListener(this);
     }
 
@@ -106,6 +109,8 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
             recreate();
         } else if (v.getId() == R.id.info) {
             redirectActivity(this, InfoActivity.class, usuarioActivo);
+        }  else if (v.getId() == R.id.qr) {
+            redirectActivity(this, QrActivity.class, usuarioActivo);
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
@@ -132,7 +137,7 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
 
                     @Override
                     public void onError(String errorMessage) {
-                        Toast.makeText(ConsultarActivity.this, "Error al buscar la cita: " + errorMessage, Toast.LENGTH_SHORT).show();
+                        mostrarToast("Error al buscar la cita");
                     }
                 });
             }
@@ -162,7 +167,7 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
                     @Override
                     public void onSuccess() {
                         // Mostrar un mensaje de éxito
-                        Toast.makeText(ConsultarActivity.this, "Cita anulada exitosamente", Toast.LENGTH_SHORT).show();
+                        mostrarToast("Cita anulada exitosamente");
                         // Actualizar la lista de citas
                         crearAdaptador();
                     }
@@ -170,7 +175,7 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
                     @Override
                     public void onFailure(String errorMessage) {
                         // Mostrar un mensaje de error
-                        Toast.makeText(ConsultarActivity.this, "Error al anular la cita: " + errorMessage, Toast.LENGTH_SHORT).show();
+                        mostrarToast("Error al anular la cita");
                     }
                 });
             }
@@ -205,6 +210,10 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
                 handler.postDelayed(this, REFRESH_INTERVAL);
             }
         }, REFRESH_INTERVAL);
+    }
+
+    private void mostrarToast(String mensaje) {
+        Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();
     }
 
     public static void openDrawer(DrawerLayout drawerLayout) {
@@ -242,5 +251,20 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
     protected void onDestroy() {
         super.onDestroy();
         handler.removeCallbacksAndMessages(null);
+    }
+
+    // Evita que se salga por error de la app
+    @Override
+    public void onBackPressed() {
+
+        if (pressedTime + 2000 > System.currentTimeMillis()) {
+            super.onBackPressed();
+            firebaseManager.signOut();
+            mGoogleSignInClient.signOut();
+            finish();
+        } else {
+            mostrarToast("Presiona nuevamente para salir");
+        }
+        pressedTime = System.currentTimeMillis();
     }
 }
