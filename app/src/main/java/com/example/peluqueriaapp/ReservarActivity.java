@@ -471,20 +471,25 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         // Obtener una instancia del AlarmManager
         AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-        // Configurar la alarma para un día antes de la cita
-        Calendar horaAlarmaDiaAntes = (Calendar) fechaHoraInicio.clone();
-        horaAlarmaDiaAntes.add(Calendar.DAY_OF_MONTH, -1);
+        // Obtener el calendario actual
+        Calendar calendarioActual = Calendar.getInstance();
 
-        // Crear un intent para la clase BroadcastReceiver que manejará la alarma del día anterior
-        Intent intentDiaAntes = new Intent(this, AlarmReceiver.class);
-        intentDiaAntes.putExtra("mensaje", "¡Mañana tiene una cita agendada! No lo olvide.");
-        intentDiaAntes.putExtra("canal", CHANNEL_ID);
+        // Configurar la alarma para un día antes de la cita solo si la cita no es para el día actual
+        if (!esMismoDia(calendarioActual, fechaHoraInicio)) {
+            Calendar horaAlarmaDiaAntes = (Calendar) fechaHoraInicio.clone();
+            horaAlarmaDiaAntes.add(Calendar.DAY_OF_MONTH, -1);
 
-        // Crear un PendingIntent para la alarma del día anterior
-        PendingIntent pendingIntentDiaAntes = PendingIntent.getBroadcast(this, 0, intentDiaAntes, PendingIntent.FLAG_IMMUTABLE);
+            // Crear un intent para la clase BroadcastReceiver que manejará la alarma del día anterior
+            Intent intentDiaAntes = new Intent(this, AlarmReceiver.class);
+            intentDiaAntes.putExtra("mensaje", "¡Mañana tiene una cita agendada! No lo olvide.");
+            intentDiaAntes.putExtra("canal", CHANNEL_ID);
 
-        // Configurar la alarma del día anterior con el tiempo calculado
-        alarmManager.set(AlarmManager.RTC_WAKEUP, horaAlarmaDiaAntes.getTimeInMillis(), pendingIntentDiaAntes);
+            // Crear un PendingIntent para la alarma del día anterior
+            PendingIntent pendingIntentDiaAntes = PendingIntent.getBroadcast(this, 0, intentDiaAntes, PendingIntent.FLAG_IMMUTABLE);
+
+            // Configurar la alarma del día anterior con el tiempo calculado
+            alarmManager.set(AlarmManager.RTC_WAKEUP, horaAlarmaDiaAntes.getTimeInMillis(), pendingIntentDiaAntes);
+        }
 
         // Configurar la alarma para una hora antes de la cita
         Calendar horaAlarmaHoraAntes = (Calendar) fechaHoraInicio.clone();
@@ -500,6 +505,13 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
         // Configurar la alarma de una hora antes con el tiempo calculado
         alarmManager.set(AlarmManager.RTC_WAKEUP, horaAlarmaHoraAntes.getTimeInMillis(), pendingIntentHoraAntes);
+    }
+
+    // Método para verificar si dos fechas están en el mismo día
+    private boolean esMismoDia(Calendar calendario1, Calendar calendario2) {
+        return calendario1.get(Calendar.YEAR) == calendario2.get(Calendar.YEAR) &&
+                calendario1.get(Calendar.MONTH) == calendario2.get(Calendar.MONTH) &&
+                calendario1.get(Calendar.DAY_OF_MONTH) == calendario2.get(Calendar.DAY_OF_MONTH);
     }
 
     private void mostrarToast(String text) {

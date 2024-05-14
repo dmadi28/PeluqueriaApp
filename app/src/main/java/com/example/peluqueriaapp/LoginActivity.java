@@ -1,5 +1,6 @@
 package com.example.peluqueriaapp;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,12 +19,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     int RC_SIGN_IN = 1;
     String TAG = "GoogleSignIn";
-    private EditText editTextEmail, editTextPassword;
+    EditText textInputEditTextEmail, textInputEditTextPassword;
+    private TextView textViewForgotPassword;
     private Button buttonLogin, buttonRegister;
     private ImageButton buttonLoginGoogle;
     private FirebaseManager firebaseManager;
@@ -52,8 +57,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void setupViews() {
-        editTextEmail = findViewById(R.id.editTextEmailL);
-        editTextPassword = findViewById(R.id.editTextPasswordL);
+        textInputEditTextEmail = findViewById(R.id.editTextEmailL);
+        textInputEditTextPassword = findViewById(R.id.editTextPasswordL);
+        textViewForgotPassword = findViewById(R.id.textViewForgotPassword);
         buttonLogin = findViewById(R.id.buttonLoginL);
         buttonLoginGoogle = findViewById(R.id.buttonLoginGoogleL);
         buttonRegister = findViewById(R.id.buttonRegisterL);
@@ -63,6 +69,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         buttonLogin.setOnClickListener(this);
         buttonLoginGoogle.setOnClickListener(this);
         buttonRegister.setOnClickListener(this);
+        textViewForgotPassword.setOnClickListener(this);
     }
 
 
@@ -74,12 +81,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             handleButtonLoginGoogle();
         } else if (v.getId() == R.id.buttonRegisterL) {
             handleButtonReservar();
+        } else if (v.getId() == R.id.textViewForgotPassword) {
+            handleForgotPassword();
         }
     }
 
     private void handleButtonLogin() {
-        String email = editTextEmail.getText().toString();
-        String password = editTextPassword.getText().toString();
+        String email = textInputEditTextEmail.getText().toString();
+        String password = textInputEditTextPassword.getText().toString();
 
         // Verificar que el correo electrónico y la contraseña no estén vacíos
         if (email.isEmpty() || password.isEmpty()) {
@@ -117,6 +126,42 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void handleButtonReservar() {
         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(intent);
+    }
+
+    private void handleForgotPassword() {
+        // Crear un cuadro de diálogo para que el usuario ingrese la nueva contraseña
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Restablecer Contraseña");
+        View view = getLayoutInflater().inflate(R.layout.dialog_forgot_password, null);
+        builder.setView(view);
+
+        EditText editTextConfirmEmail = view.findViewById(R.id.editTextEmail);
+        Button buttonResetPassword = view.findViewById(R.id.buttonResetPassword);
+
+        AlertDialog dialog = builder.create();
+        buttonResetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Obtener el correo electrónico del nuevo EditText
+                String email = editTextConfirmEmail.getText().toString();
+
+                // Usar el email obtenido para restablecer la contraseña
+                firebaseManager.resetPassword(email, new FirebaseManager.ResetPasswordListener() {
+                    @Override
+                    public void onResetSuccess(String message) {
+                        mostrarToast(message);
+                        dialog.dismiss();
+                    }
+
+                    @Override
+                    public void onResetFailure(String errorMessage) {
+                        mostrarToast(errorMessage);
+                    }
+                });
+            }
+        });
+
+        dialog.show();
     }
 
     private void signInWithGoogle() {

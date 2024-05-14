@@ -22,6 +22,7 @@ import com.google.firebase.FirebaseNetworkException;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -272,11 +273,64 @@ public class FirebaseManager {
                 });
     }
 
+    // Método para restablecer la contraseña en Firebase enviando un correo electrónico de restablecimiento de contraseña
+    public void resetPassword(String email, ResetPasswordListener listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersCollection = db.collection("usuarios");
+
+        // Realizar la consulta para verificar si el correo electrónico existe en la base de datos
+        usersCollection.whereEqualTo("email", email)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (task.getResult() != null && !task.getResult().isEmpty()) {
+                                // El correo electrónico existe en la base de datos
+                                // Envía el correo electrónico para restablecer la contraseña
+                                FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    listener.onResetSuccess("Correo electrónico enviado");
+                                                } else {
+                                                    // Error al enviar el correo electrónico de restablecimiento
+                                                    listener.onResetFailure("Error al enviar el correo electrónico");
+                                                }
+                                            }
+                                        });
+                            } else {
+                                // El correo electrónico no existe en la base de datos
+                                listener.onResetFailure("El correo electrónico no está registrado");
+                            }
+                        } else {
+                            // Error al realizar la consulta
+                            listener.onResetFailure("Error al verificar el correo electrónico");
+                        }
+                    }
+                });
+    }
+
+    public interface ResetPasswordListener {
+        void onResetSuccess(String message);
+        void onResetFailure(String errorMessage);
+    }
+
     // Método para obtener los datos de servicios desde Firestore
     public void obtenerServicios(final ServiciosCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference serviciosRef = db.collection("servicios");
+        CollectionReference serviciosRef;
 
+        // Obtener el código de idioma del dispositivo
+        String languageCode = Locale.getDefault().getLanguage();
+
+        // Determinar la colección según el idioma del dispositivo
+        if (languageCode.equals("es")) {
+            serviciosRef = db.collection("servicios");
+        } else {
+            serviciosRef = db.collection("serviciosEN");
+        }
         serviciosRef.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -496,7 +550,6 @@ public class FirebaseManager {
                                 }
                             }
                         } else {
-                            Log.e(TAG, "Error al obtener las citas: ", task.getException());
                         }
                     }
                 });

@@ -91,6 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Conócenos!"
+                    android:drawableLeft="@drawable/ic_people"
                     android:layout_marginTop="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
@@ -117,29 +118,34 @@
                     android:layout_marginEnd="16dp"
                     android:layout_gravity="center_horizontal" />
 
-                <!-- Botón de Instagram -->
-                <Button
-                    android:id="@+id/btnInstagram"
-                    android:layout_width="wrap_content"
+                <!-- Layout horizontal para los botones de Facebook e Instagram -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Instagram"
-                    android:drawableEnd="@drawable/insta"
+                    android:orientation="horizontal"
+                    android:gravity="center"
                     android:layout_marginTop="16dp"
                     android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_marginEnd="16dp">
 
-                <!-- Botón de Facebook -->
-                <Button
-                    android:id="@+id/btnFacebook"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Facebook"
-                    android:drawableEnd="@drawable/facebook"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_gravity="center_horizontal" />
+                    <!-- Botón de Instagram -->
+                    <Button
+                        android:id="@+id/btnInstagram"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Instagram"
+                        android:drawableEnd="@drawable/insta"
+                        android:layout_marginEnd="10dp" />
+
+                    <!-- Botón de Facebook -->
+                    <Button
+                        android:id="@+id/btnFacebook"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Facebook"
+                        android:drawableEnd="@drawable/facebook" />
+
+                </LinearLayout>
 
             </LinearLayout>
         </ScrollView>

@@ -1,70 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_vertical"
-    android:orientation="vertical"
-    android:padding="16dp">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <com.google.android.material.textfield.TextInputLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Email">
+        android:layout_height="wrap_content">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextEmailL"
+        <!-- Agregar el logo de la aplicación -->
+        <ImageView
+            android:id="@+id/imageViewAppIcon"
+            android:layout_width="match_parent"
+            android:layout_height="232dp"
+            android:contentDescription="Salón de belleza Lucía García"
+            android:src="@drawable/icon_login" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            />
+            android:layout_below="@id/imageViewAppIcon"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="50dp"
+            android:hint="Email">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextEmailL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:hint="Contraseña">
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextPasswordL"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayoutPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
+            android:layout_below="@id/textInputLayoutEmail"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="20dp"
+            android:hint="Contraseña"
+            app:endIconMode="password_toggle">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextPasswordL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword" />
 
-    <Button
-        android:id="@+id/buttonLoginL"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Login" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp">
+        <TextView
+            android:id="@+id/textViewForgotPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textInputLayoutPassword"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:text="¿Olvidaste tu contraseña?"
+            android:textColor="@color/lavender"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/buttonLoginL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewForgotPassword"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="50dp"
+            android:text="Login" />
 
         <ImageButton
             android:id="@+id/buttonLoginGoogleL"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_weight="1"
-            android:padding="10dp"
+            android:layout_below="@id/buttonLoginL"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/google_border"
-            android:src="@drawable/google"
             android:contentDescription="Iniciar sesión con Google"
-            android:scaleType="fitCenter" />
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/google" />
 
-    </LinearLayout>
+        <Button
+            android:id="@+id/buttonRegisterL"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/buttonLoginGoogleL"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="20dp"
+            android:text="Registrarse" />
 
-    <Button
-        android:id="@+id/buttonRegisterL"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Registrarse" />
-
-</LinearLayout>
+    </RelativeLayout>
+</ScrollView>
