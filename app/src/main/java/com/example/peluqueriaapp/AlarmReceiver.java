@@ -15,7 +15,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         String mensaje = intent.getStringExtra("mensaje");
         String canal = intent.getStringExtra("canal");
 
-        mostrarNotificacion(context, mensaje, canal);
+        mostrarNotificacion(context.getApplicationContext(), mensaje, canal);
     }
 
     @SuppressLint("MissingPermission")
@@ -26,7 +26,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         // Construir la notificación
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, canal)
                 .setSmallIcon(R.drawable.ic_notifications)
-                .setContentTitle("Recordatorio de cita")
+                .setContentTitle(context.getString(R.string.recordatorio_de_cita))
                 .setContentText(mensaje)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);

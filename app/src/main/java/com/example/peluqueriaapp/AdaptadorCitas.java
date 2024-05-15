@@ -11,10 +11,9 @@ import androidx.annotation.NonNull;
 
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Locale;
 
 public class AdaptadorCitas extends ArrayAdapter<Cita> {
-    private DecimalFormat decimalFormat;
+    private final DecimalFormat decimalFormat;
 
     public AdaptadorCitas(Context context, List<Cita> citas) {
         super(context, R.layout.listview_citas, citas);
@@ -38,11 +37,13 @@ public class AdaptadorCitas extends ArrayAdapter<Cita> {
         TextView lblHora = convertView.findViewById(R.id.lbl_hora);
         TextView lblAnotaciones = convertView.findViewById(R.id.lbl_anotaciones);
 
-        lblServicio.setText(cita.getServicio());
-        lblPrecio.setText(decimalFormat.format(cita.getPrecio()));
-        lblFecha.setText(cita.getFecha());
-        lblHora.setText(cita.getHora());
-        lblAnotaciones.setText(cita.getAnotaciones());
+        if (cita != null) {
+            lblServicio.setText(cita.getServicio());
+            lblPrecio.setText(decimalFormat.format(cita.getPrecio()));
+            lblFecha.setText(cita.getFecha());
+            lblHora.setText(cita.getHora());
+            lblAnotaciones.setText(cita.getAnotaciones());
+        }
 
         return convertView;
     }

@@ -29,14 +29,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class QrActivity extends AppCompatActivity implements View.OnClickListener {
+public class QrActivityClient extends AppCompatActivity implements View.OnClickListener {
 
     DrawerLayout drawerLayout;
     ImageView menu;
     TextView titulo;
     LinearLayout home, citas, info, qr, logout;
     String usuarioActivo = "";
-    ImageButton buttonGenerar, buttonEscanear;
     FirebaseManager firebaseManager;
     GoogleSignInClient mGoogleSignInClient;
     long pressedTime;
@@ -45,7 +44,7 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_qr);
+        setContentView(R.layout.activity_qr_client);
 
         usuarioActivo = getIntent().getStringExtra("usuarioActivo");
 
@@ -70,13 +69,10 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
         info = findViewById(R.id.info);
         qr = findViewById(R.id.qr);
         logout = findViewById(R.id.logout);
-
-        buttonGenerar = findViewById(R.id.btnGenerarQR);
-        buttonEscanear = findViewById(R.id.btnEscanearQR);
     }
 
     private void updateTitle() {
-        titulo.setText(R.string.generador_codigos_descuento);
+        titulo.setText(R.string.desglose_de_descuentos);
     }
 
     private void setupOnClickListeners() {
@@ -86,9 +82,6 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
         info.setOnClickListener(this);
         qr.setOnClickListener(this);
         logout.setOnClickListener(this);
-
-        buttonGenerar.setOnClickListener(this);
-        buttonEscanear.setOnClickListener(this);
     }
 
     @Override
@@ -115,11 +108,6 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
             redirectActivity(this, InfoActivity.class, usuarioActivo);
         } else if (v.getId() == R.id.qr) {
             recreate();
-        } else if (v.getId() == R.id.btnGenerarQR) {
-            // Redirige a la actividad para generar códigos
-            redirectActivity(this, GenerarQrActivity.class, usuarioActivo);
-        } else if (v.getId() == R.id.btnEscanearQR) {
-            abrirScanner();
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
@@ -129,112 +117,8 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
         }
     }
 
-    private void abrirScanner() {
-        IntentIntegrator integrator = new IntentIntegrator(this);
-        integrator.setPrompt(getString(R.string.leyendo_codigo_descuento));
-        integrator.setBeepEnabled(true);
-        integrator.setBarcodeImageEnabled(true);
-        integrator.initiateScan();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-        if (result != null) {
-            if (result.getContents() != null) {
-                // Se leyó correctamente el contenido del código
-                comprobarCodigoQR(result.getContents());
-                //mostrarInformacionQR(result.getContents());
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    private void comprobarCodigoQR(String codigoQR) {
-        // Extraer porcentaje y fecha de expiración
-        String porcentaje = extraerPorcentaje(codigoQR);
-        String fechaExpiracion = extraerFechaExpiracion(codigoQR);
-
-        // Verificar la existencia del código QR en Firebase
-        firebaseManager.comprobarExistenciaCodigoQR(porcentaje, fechaExpiracion, new FirebaseManager.OnCodigoQRComprobadoListener() {
-            @Override
-            public void onCodigoQRComprobado(boolean existe) {
-                if (existe) {
-                    // Si el código QR ya existe en Firebase
-                    if (!isFechaExpirada(fechaExpiracion)) {
-                        // Si la fecha de expiración no ha pasado todavía
-                        mostrarToast(getString(R.string.codigo_valido));
-                        mostrarInformacionQR(codigoQR);
-                        // Eliminar el documento correspondiente al código QR válido
-                        firebaseManager.eliminarCodigoQR(porcentaje, fechaExpiracion);
-                    } else {
-                        // Si la fecha de expiración ya ha pasado
-                        mostrarToast(getString(R.string.codigo_caducado));
-                        // Eliminar el documento correspondiente al código QR inválido
-                        firebaseManager.eliminarCodigoQR(porcentaje, fechaExpiracion);
-                    }
-                } else {
-                    // Si el código QR no existe en Firebase
-                    mostrarToast(getString(R.string.codigo_no_existe));
-                }
-            }
-        });
-    }
-
-    // Método para verificar si la fecha de expiración ha pasado
-    private boolean isFechaExpirada(String fechaExpiracion) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-            Date fechaExpiracionDate = dateFormat.parse(fechaExpiracion);
-            Date fechaActual = new Date();
-            return fechaActual.after(fechaExpiracionDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
-    private void mostrarInformacionQR(String codigoQR) {
-        // Crear y mostrar un AlertDialog con la información del código QR
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.codigo_activo);
-        builder.setMessage(codigoQR);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        builder.show();
-    }
-
     private void mostrarToast(String mensaje) {
         Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show();
-    }
-
-    private String extraerPorcentaje(String codigoQR) {
-        // Extraer el porcentaje del código QR
-        String porcentajeLabel = getString(R.string.porcentaje_de_descuento_a_aplicar);
-        int inicio = codigoQR.indexOf(porcentajeLabel) + porcentajeLabel.length();
-        int fin = codigoQR.indexOf("%", inicio);
-        if (inicio >= 0 && fin >= 0 && fin > inicio) {
-            return codigoQR.substring(inicio, fin + 1);
-        }
-        return null;
-    }
-
-    private String extraerFechaExpiracion(String codigoQR) {
-        // Extraer la fecha de expiración del código QR
-        String fechaLabel = getString(R.string.fecha_de_expiracion_del_codigo);
-        int inicio = codigoQR.indexOf(fechaLabel) + fechaLabel.length();
-        int fin = codigoQR.indexOf("\n", inicio);
-        if (inicio >= 0 && fin >= 0 && fin > inicio) {
-            return codigoQR.substring(inicio, fin);
-        }
-        return null;
     }
 
     public static void openDrawer(DrawerLayout drawerLayout) {

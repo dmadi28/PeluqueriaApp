@@ -3,7 +3,6 @@ package com.example.peluqueriaapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,8 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -23,10 +20,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.core.graphics.Insets;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -34,15 +28,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.Calendar;
 import java.util.Date;
 
-public class GenerarCodigoActivity extends AppCompatActivity implements View.OnClickListener {
+public class GenerarQrActivity extends AppCompatActivity implements View.OnClickListener {
 
     DrawerLayout drawerLayout;
     ImageView menu;
@@ -50,8 +41,7 @@ public class GenerarCodigoActivity extends AppCompatActivity implements View.OnC
     LinearLayout home, citas, info, qr, logout;
     CardView cardViewQr;
     Button buttonGenerarQr;
-    EditText editPorcentajeDescuento;
-    Spinner spinnerDuracion;
+    Spinner spinnerPorcentaje, spinnerDuracion;
     ImageView imagenQr;
     FloatingActionButton fabCompartirQR;
     String porcentajeSeleccionado = "";
@@ -78,6 +68,8 @@ public class GenerarCodigoActivity extends AppCompatActivity implements View.OnC
         updateTitle();
         // Configurar OnClickListener de los botones
         setupOnClickListeners();
+        // Configurar Spinner de porcentaje
+        setupSpinnerPorcentaje();
         // Configurar Spinner de duración
         setupSpinnerDuracion();
     }
@@ -93,7 +85,7 @@ public class GenerarCodigoActivity extends AppCompatActivity implements View.OnC
         qr = findViewById(R.id.qr);
         logout = findViewById(R.id.logout);
 
-        editPorcentajeDescuento = findViewById(R.id.editPorcentajeDescuento);
+        spinnerPorcentaje = findViewById(R.id.spinnerPorcentaje);
         spinnerDuracion = findViewById(R.id.spinnerDuracion);
         buttonGenerarQr = findViewById(R.id.btnGenerarQR);
         cardViewQr = findViewById(R.id.cardViewQR);
@@ -102,7 +94,7 @@ public class GenerarCodigoActivity extends AppCompatActivity implements View.OnC
     }
 
     private void updateTitle() {
-        titulo.setText("Generador de códigos de descuento");
+        titulo.setText(R.string.generador_codigos_descuento);
     }
 
     private void setupOnClickListeners() {
@@ -121,13 +113,31 @@ public class GenerarCodigoActivity extends AppCompatActivity implements View.OnC
         if (v.getId() == R.id.menu) {
             openDrawer(drawerLayout);
         } else if (v.getId() == R.id.home) {
-            redirectActivity(this, ReservarActivity.class);
+            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
+                if (isAdmin) {
+                    redirectActivity(this, ReservarActivity.class);
+                } else {
+                    redirectActivity(this, ReservarActivityClient.class);
+                }
+            });
         } else if (v.getId() == R.id.citas) {
-            redirectActivity(this, ConsultarActivity.class, usuarioActivo);
+            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
+                if (isAdmin) {
+                    redirectActivity(this, ConsultarActivity.class, usuarioActivo);
+                } else {
+                    redirectActivity(this, ConsultarActivityClient.class, usuarioActivo);
+                }
+            });
         } else if (v.getId() == R.id.info) {
             redirectActivity(this, InfoActivity.class, usuarioActivo);
         } else if (v.getId() == R.id.qr) {
-            redirectActivity(this, QrActivity.class, usuarioActivo);
+            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
+                if (isAdmin) {
+                    redirectActivity(this, QrActivity.class, usuarioActivo);
+                } else {
+                    redirectActivity(this, QrActivityClient.class, usuarioActivo);
+                }
+            });
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
@@ -141,10 +151,33 @@ public class GenerarCodigoActivity extends AppCompatActivity implements View.OnC
         }
     }
 
+    // Método para configurar el Spinner de porcentaje
+    private void setupSpinnerPorcentaje() {
+        // Opciones de porcentajes de descuento
+        String[] descuentos = getResources().getStringArray(R.array.descuentos);
+
+        // Crea un adaptador para el Spinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, descuentos);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // Asigna el adaptador al Spinner
+        spinnerPorcentaje.setAdapter(adapter);
+
+        // Configura el listener para el Spinner
+        spinnerPorcentaje.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                porcentajeSeleccionado = descuentos[position];
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
     // Método para configurar el Spinner de duración
     private void setupSpinnerDuracion() {
-        spinnerDuracion = findViewById(R.id.spinnerDuracion);
-
         // Opciones de duración
         String[] duraciones = getResources().getStringArray(R.array.duraciones);
 
@@ -170,35 +203,21 @@ public class GenerarCodigoActivity extends AppCompatActivity implements View.OnC
 
     // Método para guardar la info del código de descuento y generar el Qr
     private void generarQr() {
-        porcentajeSeleccionado = editPorcentajeDescuento.getText().toString();
-
-        // Verificar que el porcentaje no esté vacío
-        if (porcentajeSeleccionado.isEmpty()) {
-            mostrarToast("Por favor, introduzca un porcentaje de descuento");
-            return;
-        }
-
         // Hacer visible el botón de compartir
         fabCompartirQR.setVisibility(View.VISIBLE);
 
         // Calcular la fecha de expiración basada en la duración seleccionada en el Spinner
         Calendar calendar = Calendar.getInstance();
-        switch (duracionSeleccionada) {
-            case "1 día":
-                calendar.add(Calendar.DATE, 1);
-                break;
-            case "3 meses":
-                calendar.add(Calendar.MONTH, 3);
-                break;
-            case "6 meses":
-                calendar.add(Calendar.MONTH, 6);
-                break;
-            case "1 año":
-                calendar.add(Calendar.YEAR, 1);
-                break;
-            case "2 años":
-                calendar.add(Calendar.YEAR, 2);
-                break;
+        if (duracionSeleccionada.equals(getString(R.string.one_day))) {
+            calendar.add(Calendar.DATE, 1);
+        } else if (duracionSeleccionada.equals(getString(R.string.three_months))) {
+            calendar.add(Calendar.MONTH, 3);
+        } else if (duracionSeleccionada.equals(getString(R.string.six_months))) {
+            calendar.add(Calendar.MONTH, 6);
+        } else if (duracionSeleccionada.equals(getString(R.string.one_year))) {
+            calendar.add(Calendar.YEAR, 1);
+        } else if (duracionSeleccionada.equals(getString(R.string.two_years))) {
+            calendar.add(Calendar.YEAR, 2);
         }
         Date fechaExpiracion = calendar.getTime();
 
@@ -206,13 +225,13 @@ public class GenerarCodigoActivity extends AppCompatActivity implements View.OnC
         String textoFechaExpiracion = formatDate(fechaExpiracion);
 
         // Generar el código QR con el porcentaje seleccionado
-        String textoQR = "Porcentaje de descuento a aplicar: " + porcentajeSeleccionado + "%\n" +
-                "Fecha de expiración del código: " + textoFechaExpiracion + "\n";
+        String textoQR = getString(R.string.porcentaje_de_descuento_a_aplicar) + porcentajeSeleccionado + "\n" +
+                getString(R.string.fecha_de_expiracion_del_codigo) + textoFechaExpiracion + "\n";
         generarCodigoQR(textoQR);
 
         firebaseManager.crearCodigo(porcentajeSeleccionado, textoFechaExpiracion);
 
-        mostrarToast("¡Código generado correctamente!");
+        mostrarToast(getString(R.string.codigo_generado_correctamente));
 
         // Cambiar la visibilidad de la tarjeta
         cardViewQr.setVisibility(View.VISIBLE);
@@ -249,7 +268,7 @@ public class GenerarCodigoActivity extends AppCompatActivity implements View.OnC
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("image/*");
         shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
-        startActivity(Intent.createChooser(shareIntent, "Compartir código QR"));
+        startActivity(Intent.createChooser(shareIntent, getString(R.string.compartir_codigo)));
     }
 
     // Método para obtener el URI de un ImageView
@@ -307,7 +326,7 @@ public class GenerarCodigoActivity extends AppCompatActivity implements View.OnC
             mGoogleSignInClient.signOut();
             finish();
         } else {
-            mostrarToast("Presiona nuevamente para salir");
+            mostrarToast(getString(R.string.press_again_to_exit));
         }
         pressedTime = System.currentTimeMillis();
     }

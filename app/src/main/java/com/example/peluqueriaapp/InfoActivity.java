@@ -102,7 +102,7 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void updateTitle() {
-        titulo.setText("Información de contacto");
+        titulo.setText(R.string.informacion_de_contacto);
     }
 
     private void setupOnClickListeners() {
@@ -125,13 +125,31 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId() == R.id.menu) {
             openDrawer(drawerLayout);
         } else if (v.getId() == R.id.home) {
-            redirectActivity(this, ReservarActivity.class);
+            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
+                if (isAdmin) {
+                    redirectActivity(this, ReservarActivity.class);
+                } else {
+                    redirectActivity(this, ReservarActivityClient.class);
+                }
+            });
         } else if (v.getId() == R.id.citas) {
-            redirectActivity(this, ConsultarActivity.class, usuarioActivo);
+            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
+                if (isAdmin) {
+                    redirectActivity(this, ConsultarActivity.class, usuarioActivo);
+                } else {
+                    redirectActivity(this, ConsultarActivityClient.class, usuarioActivo);
+                }
+            });
         } else if (v.getId() == R.id.info) {
             recreate();
         } else if (v.getId() == R.id.qr) {
-            redirectActivity(this, QrActivity.class, usuarioActivo);
+            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
+                if (isAdmin) {
+                    redirectActivity(this, QrActivity.class, usuarioActivo);
+                } else {
+                    redirectActivity(this, QrActivityClient.class, usuarioActivo);
+                }
+            });
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
@@ -149,16 +167,16 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
             }
         } else if (v.getId() == R.id.imageViewEquipo) {
             // Abrir post Equipo
-            openUrl("https://www.instagram.com/p/C4JErsqI7aK/");
+            openUrl(getString(R.string.url_equipo_instagram));
         } else if (v.getId() == R.id.btnWhatsApp) {
             // Abrir WhatsApp
-            openUrl("https://api.whatsapp.com/send?phone=657129163");
+            openUrl(getString(R.string.url_whatsapp));
         } else if (v.getId() == R.id.btnInstagram) {
             // Abrir Instagram
-            openUrl("https://www.instagram.com/salondebelleza_luciagarcia/");
+            openUrl(getString(R.string.url_instagram));
         } else if (v.getId() == R.id.btnFacebook) {
             // Abrir Facebook
-            openUrl("https://m.facebook.com/people/Sal%C3%B3n-de-Belleza-y-Est%C3%A9tica-Luc%C3%ADa-Garc%C3%ADa/100063668197457/");
+            openUrl(getString(R.string.url_facebook));
         }
     }
 
@@ -208,13 +226,12 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
         if (mapIntent.resolveActivity(getPackageManager()) != null) {
             startActivity(mapIntent);
         } else {
-            mostrarToast("No se encontró la aplicación de Google Maps.");
+            mostrarToast(getString(R.string.no_google_maps));
         }
     }
 
     @Override
     public void onMapReady(GoogleMap map) {
-        // Marcador de la peluquería
         LatLng peluqueriaLatLng = new LatLng(latitud, longitud); // Coordenadas de la peluquería
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(peluqueriaLatLng, 20));
     }
@@ -264,7 +281,7 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
             mGoogleSignInClient.signOut();
             finish();
         } else {
-            mostrarToast("Presiona nuevamente para salir");
+            mostrarToast(getString(R.string.press_again_to_exit));
         }
         pressedTime = System.currentTimeMillis();
     }

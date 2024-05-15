@@ -54,18 +54,18 @@ public class RegisterActivity extends AppCompatActivity {
         // Nombre
         String nombre = editTextNombre.getText().toString();
         if (TextUtils.isEmpty(nombre)) {
-            editTextNombre.setError("El campo de nombre está vacío");
+            editTextNombre.setError(getString(R.string.nombre_vacio));
             return false;
         }
 
         // Email
         String email = editTextEmail.getText().toString();
         if (TextUtils.isEmpty(email)) {
-            editTextEmail.setError("El campo de email está vacío");
+            editTextEmail.setError(getString(R.string.email_vacio));
             return false;
         }
         if (!isValidEmail(email)) {
-            editTextEmail.setError("Formato de email incorrecto");
+            editTextEmail.setError(getString(R.string.formato_email_incorrecto));
             return false;
         }
 
@@ -73,26 +73,26 @@ public class RegisterActivity extends AppCompatActivity {
         String password = editTextPassword.getText().toString();
         String confirmPassword = editTextPassword2.getText().toString();
         if (TextUtils.isEmpty(password)) {
-            editTextPassword.setError("El campo de contraseña está vacío");
+            editTextPassword.setError(getString(R.string.contrasena_vacio));
             return false;
         }
         if (password.length() < 6) {
-            editTextPassword.setError("La contraseña debe tener al menos 6 caracteres");
+            editTextPassword.setError(getString(R.string.contrasena_caracteres));
             return false;
         }
         if (!password.equals(confirmPassword)) {
-            editTextPassword2.setError("Las contraseñas no coinciden");
+            editTextPassword2.setError(getString(R.string.contrasenas_no_coinciden));
             return false;
         }
 
         // Teléfono
         String telefono = editTextTelefono.getText().toString();
         if (TextUtils.isEmpty(telefono)) {
-            editTextTelefono.setError("El campo de teléfono está vacío");
+            editTextTelefono.setError(getString(R.string.telefono_vacio));
             return false;
         }
         if (!isValidPhoneNumber(telefono)) {
-            editTextTelefono.setError("Formato de teléfono incorrecto");
+            editTextTelefono.setError(getString(R.string.formato_telefono_incorrecto));
             return false;
         }
 

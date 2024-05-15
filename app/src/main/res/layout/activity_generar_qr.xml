@@ -6,7 +6,7 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GenerarCodigoActivity">
+    tools:context=".GenerarQrActivity">
 
     <!-- Contenedor principal -->
     <LinearLayout
@@ -23,18 +23,34 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="50dp">
 
-            <!-- EditText para el porcentaje de descuento -->
-            <EditText
-                android:id="@+id/editPorcentajeDescuento"
-                android:layout_width="wrap_content"
+            <!-- LinearLayout para el porcentaje de descuento -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Porcentaje de descuento"
-                android:inputType="numberDecimal"
-                android:maxLength="2"
-                android:gravity="center_horizontal"
-                android:layout_marginBottom="20dp"/>
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp">
+
+                <!-- TextView para indicar el porcentaje de descuento -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/porcentaje_de_descuento"
+                    android:textSize="18sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginEnd="8dp"/>
+
+                <!-- Spinner para seleccionar el porcentaje -->
+                <Spinner
+                    android:id="@+id/spinnerPorcentaje"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -42,13 +58,13 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:layout_marginTop="20dp"
-                android:layout_marginLeft="20dp">
+                android:layout_marginStart="20dp">
 
                 <!-- TextView para indicar la duración del descuento -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Duración del descuento:"
+                    android:text="@string/duracion_del_descuento"
                     android:textSize="18sp"
                     android:textColor="@android:color/black"
                     android:layout_marginEnd="8dp"/>
@@ -66,8 +82,8 @@
                 android:id="@+id/btnGenerarQR"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Generar QR"
-                android:drawableLeft="@drawable/ic_qr"
+                android:text="@string/generar_qr"
+                android:drawableStart="@drawable/ic_qr"
                 android:drawablePadding="8dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"/>

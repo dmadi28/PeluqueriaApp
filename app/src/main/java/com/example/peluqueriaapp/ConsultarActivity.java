@@ -83,11 +83,10 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
 
         lvCitas = findViewById(R.id.lvCitas);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
-        startAutoRefresh();
     }
 
     private void updateTitle() {
-        titulo.setText("Consultar citas de: \n" + usuarioActivo);
+        titulo.setText(R.string.consultar_todas_las_citas);
     }
 
     private void setupOnClickListeners() {
@@ -104,13 +103,25 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
         if (v.getId() == R.id.menu) {
             openDrawer(drawerLayout);
         } else if (v.getId() == R.id.home) {
-            redirectActivity(this, ReservarActivity.class);
+            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
+                if (isAdmin) {
+                    redirectActivity(this, ReservarActivity.class);
+                } else {
+                    redirectActivity(this, ReservarActivityClient.class);
+                }
+            });
         } else if (v.getId() == R.id.citas) {
             recreate();
         } else if (v.getId() == R.id.info) {
             redirectActivity(this, InfoActivity.class, usuarioActivo);
         }  else if (v.getId() == R.id.qr) {
-            redirectActivity(this, QrActivity.class, usuarioActivo);
+            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
+                if (isAdmin) {
+                    redirectActivity(this, QrActivity.class, usuarioActivo);
+                } else {
+                    redirectActivity(this, QrActivityClient.class, usuarioActivo);
+                }
+            });
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
@@ -137,7 +148,7 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
 
                     @Override
                     public void onError(String errorMessage) {
-                        mostrarToast("Error al buscar la cita");
+                        mostrarToast(getString(R.string.error_al_buscar_la_cita));
                     }
                 });
             }
@@ -157,9 +168,9 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
 
     private void showConfirmationDialog(Cita cita) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ConsultarActivity.this);
-        builder.setTitle("Anular Cita");
-        builder.setMessage("¿Desea anular esta cita?");
-        builder.setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+        builder.setTitle(R.string.anular_cita);
+        builder.setMessage(R.string.desea_anular_cita);
+        builder.setPositiveButton(R.string.si, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Llamar al método del FirebaseManager para eliminar la cita
@@ -167,7 +178,7 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
                     @Override
                     public void onSuccess() {
                         // Mostrar un mensaje de éxito
-                        mostrarToast("Cita anulada exitosamente");
+                        mostrarToast(getString(R.string.cita_anulada_exitosamente));
                         // Actualizar la lista de citas
                         crearAdaptador();
                     }
@@ -175,7 +186,7 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
                     @Override
                     public void onFailure(String errorMessage) {
                         // Mostrar un mensaje de error
-                        mostrarToast("Error al anular la cita");
+                        mostrarToast(getString(R.string.error_al_anular_la_cita));
                     }
                 });
             }
@@ -185,11 +196,28 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void crearAdaptador() {
+        startAutoRefresh();
+
         firebaseManager.obtenerCitasPorUsuario(usuarioActivo, new FirebaseManager.CitasCallback() {
             @Override
             public void onCitasObtenidas(List<Cita> citasList) {
-                AdaptadorCitas adapter = new AdaptadorCitas(ConsultarActivity.this, citasList);
-                lvCitas.setAdapter(adapter);
+                TextView textViewNoCitas = findViewById(R.id.textViewNoCitas);
+                TextView textViewAnularCita = findViewById(R.id.textViewAnularCita);
+                if (citasList.isEmpty()) {
+                    // Si no hay citas disponibles
+                    lvCitas.setVisibility(View.GONE);
+                    textViewNoCitas.setVisibility(View.VISIBLE);
+                    textViewAnularCita.setVisibility(View.GONE);
+                } else {
+                    // Si hay citas disponibles
+                    lvCitas.setVisibility(View.VISIBLE);
+                    textViewNoCitas.setVisibility(View.GONE);
+                    textViewAnularCita.setVisibility(View.VISIBLE);
+
+                    // Configurar el adaptador con la lista de citas
+                    AdaptadorCitas adapter = new AdaptadorCitas(ConsultarActivity.this, citasList);
+                    lvCitas.setAdapter(adapter);
+                }
             }
 
             @Override
@@ -263,7 +291,7 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
             mGoogleSignInClient.signOut();
             finish();
         } else {
-            mostrarToast("Presiona nuevamente para salir");
+            mostrarToast(getString(R.string.press_again_to_exit));
         }
         pressedTime = System.currentTimeMillis();
     }

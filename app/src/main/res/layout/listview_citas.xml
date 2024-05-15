@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -22,7 +21,7 @@
             android:id="@+id/txt_servicio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Servicio:"
+            android:text="@string/servicio"
             android:textStyle="bold"
             android:layout_marginTop="8dp"/>
 
@@ -37,7 +36,7 @@
             android:id="@+id/txt_precio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Precio:"
+            android:text="@string/precio"
             android:textStyle="bold"
             android:layout_marginTop="8dp"/>
 
@@ -53,7 +52,7 @@
             android:id="@+id/txt_anotaciones"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Anotaciones:"
+            android:text="@string/anotaciones"
             android:textStyle="bold"
             android:layout_marginTop="8dp"/>
 
@@ -83,7 +82,7 @@
             android:id="@+id/txt_fecha"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Fecha:"
+            android:text="@string/fecha"
             android:textStyle="bold"
             android:layout_marginTop="8dp"/>
 
@@ -98,7 +97,7 @@
             android:id="@+id/txt_hora"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hora:"
+            android:text="@string/hora"
             android:textStyle="bold"
             android:layout_marginTop="8dp"/>
 

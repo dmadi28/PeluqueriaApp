@@ -1,0 +1,164 @@
+<resources>
+    <string name="app_name">Lucía García</string>
+    <string name="default_web_client_id">701396161148-mfd6idsjg4r8v6rcfen4tftai23gmlri.apps.googleusercontent.com</string>
+    <string-array name="horas_disponibles">
+        <item>10:00</item>
+        <item>11:00</item>
+        <item>12:00</item>
+        <item>13:00</item>
+        <item>15:00</item>
+        <item>16:00</item>
+        <item>17:00</item>
+        <item>18:00</item>
+        <item>19:00</item>
+    </string-array>
+
+    <string-array name="generos">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+    <string-array name="descuentos">
+        <item>10%</item>
+        <item>20%</item>
+        <item>30%</item>
+        <item>40%</item>
+    </string-array>
+
+    <string-array name="duraciones">
+        <item>1 day</item>
+        <item>3 months</item>
+        <item>6 months</item>
+        <item>1 year</item>
+        <item>2 years</item>
+    </string-array>
+
+    <string name="one_day">1 day</string>
+    <string name="three_months">3 months</string>
+    <string name="six_months">6 months</string>
+    <string name="one_year">1 year</string>
+    <string name="two_years">2 years</string>
+
+    <!-- XMLs -->
+    <!-- XML Login -->
+    <string name="email">Email</string>
+    <string name="contrasena">Password</string>
+    <string name="olvidaste_contrasena">Forgot your password?</string>
+    <string name="login">Login</string>
+    <string name="registrarse">Register</string>
+    <!-- XML Register -->
+    <string name="registro_en_peluqueria_lucia">Register at Lucía\'s Hair Salon</string>
+    <string name="nombre">Name</string>
+    <string name="confirmar_contrasena">Confirm Password</string>
+    <string name="telefono">Phone</string>
+    <!-- XML Forgot Password -->
+    <string name="enviar_correo_de_recuperacion">Send recovery email</string>
+    <!-- XML Navigation Drawer -->
+    <string name="reservar_citas">Book Appointments</string>
+    <string name="consultar_citas">Consult Appointments</string>
+    <string name="info_de_contacto">Contact Information</string>
+    <string name="descuentos">Discounts</string>
+    <string name="log_out">Log-out</string>
+    <string name="disenado_por">Designed by David Maestre Díaz ®</string>
+    <!-- XML Reservar Cita -->
+    <string name="reserva_cita">Appointment Booking</string>
+    <string name="elija_su_servicio">Choose your service:</string>
+    <string name="elija_una_hora">Choose a time:</string>
+    <string name="siguiente">Next</string>
+    <string name="anadir_anotaciones">Add notes... (optional)</string>
+    <string name="reservar">Book</string>
+    <!-- XML Consultar Citas -->
+    <string name="no_tiene_citas_disponibles">You have no available appointments</string>
+    <string name="pulse_anular_cita">Tap on an appointment if you want to cancel it</string>
+    <string name="servicio">Service:</string>
+    <string name="precio">Price:</string>
+    <string name="anotaciones">Notes:</string>
+    <string name="fecha">Date:</string>
+    <string name="hora">Time:</string>
+    <!-- XML Info de Contacto -->
+    <string name="direccion">Av. Gran Canaria, 2, local 2, 29130 El Peñón, Málaga</string>
+    <string name="horarios">Business Hours:</string>
+    <string name="horario">Monday to Friday: 10:00 AM - 6:00 PM\nSaturdays: 10:00 AM - 2:00 PM</string>
+    <string name="conocenos">Get to know us!</string>
+    <string name="escribenos">Write to us!</string>
+    <string name="instagram">Instagram</string>
+    <string name="facebook">Facebook</string>
+    <!-- XML QR Code -->
+    <string name="generar_codigo">Generate Code</string>
+    <string name="escanear_codigo">Scan Code</string>
+    <string name="porcentaje_de_descuento">Discount Percentage:</string>
+    <string name="duracion_del_descuento">Discount Duration:</string>
+    <string name="generar_qr">Generate QR</string>
+    <!-- XML Tabla Descuentos Cliente -->
+    <string name="porcentajes_de_descuento">Discount Percentages</string>
+    <string name="compra">Purchase (€)</string>
+    <string name="descuento">Discount (%)</string>
+    <string name="menos_de_10">Less than 10</string>
+    <string name="mas_de_50">More than 50</string>
+
+    <!-- Activitys -->
+    <string name="press_again_to_exit">Press again to exit</string>
+    <!-- LoginActivity -->
+    <string name="ingresa_correo_y_contrasena">Please enter your email and password</string>
+    <string name="inicio_de_sesion_fallido">Login failed</string>
+    <string name="inicio_de_sesion_exitoso">Login successful</string>
+    <string name="reset_contrasena">Reset Password</string>
+    <!-- RegisterActivity -->
+    <string name="nombre_vacio">Name field is empty</string>
+    <string name="email_vacio">Email field is empty</string>
+    <string name="contrasena_vacio">Password field is empty</string>
+    <string name="telefono_vacio">Phone field is empty</string>
+    <string name="formato_email_incorrecto">Incorrect email format</string>
+    <string name="formato_telefono_incorrecto">Incorrect phone format</string>
+    <string name="contrasena_caracteres">Password must be at least 6 characters</string>
+    <string name="contrasenas_no_coinciden">Passwords do not match</string>
+    <!-- ReservarActivity -->
+    <string name="bienvenido_administrador">"Welcome administrator, "</string>
+    <string name="seleccione_un_servicio">Please select a service.</string>
+    <string name="seleccione_fecha_hora">Please select a date and time.</string>
+    <string name="no_reservas_disponibles">Sorry, there are no available bookings for that day.</string>
+    <string name="title_notification">Lucía\'s Hair Salon</string>
+    <string name="text_notification">Booking confirmed!</string>
+    <string name="recordatorio_de_cita">Appointment reminder</string>
+    <string name="calendar_description">Appointment confirmed at Lucía García\'s Hair and Beauty Salon.</string>
+    <string name="calendar_title">Hairdressing appointment</string>
+    <string name="calendar_location">Lucía García\'s Hair and Beauty Salon</string>
+    <string name="dia_alarma">Tomorrow you have a scheduled appointment! Don\'t forget it.</string>
+    <string name="hora_alarma">"Your appointment will start in 1 hour! "</string>
+    <!-- ReservarActivityClient -->
+    <string name="bienvenido">"Welcome, "</string>
+    <string name="servicios_de_peluqueria">Hairdressing Services</string>
+    <string name="servicios_de_estetica">Aesthetic Services</string>
+    <!-- ConsultarActivity -->
+    <string name="consultar_todas_las_citas">Check all appointments</string>
+    <string name="error_al_buscar_la_cita">Error finding appointment</string>
+    <string name="anular_cita">Cancel Appointment</string>
+    <string name="desea_anular_cita">Do you want to cancel this appointment?</string>
+    <string name="si">Yes</string>
+    <string name="cita_anulada_exitosamente">Appointment canceled successfully</string>
+    <string name="error_al_anular_la_cita">Error canceling appointment</string>
+    <!-- ConsultarActivityClient -->
+    <string name="consultar_citas_de">Consult appointments of: \n</string>
+    <!-- InfoActivity -->
+    <string name="informacion_de_contacto">Contact Information</string>
+    <string name="url_equipo_instagram">https://www.instagram.com/p/C4JErsqI7aK/</string>
+    <string name="url_whatsapp">https://api.whatsapp.com/send?phone=657129163</string>
+    <string name="url_instagram">https://www.instagram.com/salondebelleza_luciagarcia/</string>
+    <string name="url_facebook">https://m.facebook.com/people/Sal%C3%B3n-de-Belleza-y-Est%C3%A9tica-Luc%C3%ADa-Garc%C3%ADa/100063668197457/</string>
+    <string name="no_google_maps">Google Maps application not found.</string>
+    <!-- QrActivity -->
+    <string name="generador_codigos_descuento">Discount Codes Generator</string>
+    <string name="leyendo_codigo_descuento">Reading discount code...</string>
+    <string name="codigo_valido">Congratulations, code VALID!</string>
+    <string name="codigo_caducado">Code EXPIRED!</string>
+    <string name="codigo_no_existe">ERROR. Code does not exist</string>
+    <string name="codigo_activo">Active discount code</string>
+    <!-- QrActivityClient -->
+    <string name="desglose_de_descuentos">Discounts Breakdown</string>
+    <!-- GenerarQrActivity -->
+    <string name="codigo_generado_correctamente">Code generated successfully!</string>
+    <string name="compartir_codigo">Share QR code</string>
+    <string name="porcentaje_de_descuento_a_aplicar">"Percentage discount to apply: "</string>
+    <string name="fecha_de_expiracion_del_codigo">"Expiration date of the code: "</string>
+
+</resources>

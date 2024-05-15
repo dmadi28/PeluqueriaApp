@@ -19,7 +19,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reserva Cita"
+            android:text="@string/reserva_cita"
             android:textStyle="bold"
             android:textSize="24sp"
             android:layout_gravity="center_horizontal"
@@ -30,7 +30,7 @@
             android:id="@+id/textViewServicio"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Elija su servicio:"
+            android:text="@string/elija_su_servicio"
             android:textSize="18sp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="8dp"/>
@@ -50,7 +50,7 @@
             android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Elija una hora:"
+            android:text="@string/elija_una_hora"
             android:textSize="18sp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="16dp"/>
@@ -86,7 +86,7 @@
                         android:id="@+id/buttonSiguiente"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Siguiente"
+                        android:text="@string/siguiente"
                         android:drawableEnd="@drawable/ic_navigate"
                         android:layout_marginTop="16dp"/>
 
@@ -128,7 +128,7 @@
                         android:id="@+id/textNoReservas"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="No hay reservas disponibles"
+                        android:text="@string/no_reservas_disponibles"
                         android:textAppearance="?android:textAppearanceMedium"
                         android:visibility="gone"
                         android:layout_marginTop="16dp"/>
@@ -144,7 +144,7 @@
                         android:id="@+id/editTextAnotaciones"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Añadir anotaciones... (opcional)"
+                        android:hint="@string/anadir_anotaciones"
                         android:inputType="textMultiLine"
                         android:maxLength="50"
                         android:layout_marginTop="16dp"/>
@@ -154,7 +154,7 @@
                         android:id="@+id/buttonReservar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Reservar"
+                        android:text="@string/reservar"
                         android:drawableEnd="@drawable/ic_shopping_cart"
                         android:layout_marginTop="16dp"/>
 

@@ -41,7 +41,13 @@
             android:name=".ReservarActivity"
             android:exported="false" />
         <activity
+            android:name=".ReservarActivityClient"
+            android:exported="false" />
+        <activity
             android:name=".ConsultarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ConsultarActivityClient"
             android:exported="false" />
         <activity
             android:name=".InfoActivity"
@@ -50,7 +56,10 @@
             android:name=".QrActivity"
             android:exported="false" />
         <activity
-            android:name=".GenerarCodigoActivity"
+            android:name=".QrActivityClient"
+            android:exported="false" />
+        <activity
+            android:name=".GenerarQrActivity"
             android:screenOrientation="portrait"
             android:exported="false" />
         <receiver android:name=".AlarmReceiver" />

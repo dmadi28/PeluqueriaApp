@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@drawable/drawer_border"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="176dp"
         android:orientation="vertical"
-        android:gravity="bottom"
-        android:background="@drawable/header_bkg"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark">
+        android:gravity="bottom">
 
         <ImageView
             android:layout_width="423dp"
@@ -34,11 +32,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reservar citas"
+            android:text="@string/reservar_citas"
             android:textColor="@color/lavender"
             android:textSize="20sp"
-            android:drawableLeft="@drawable/ic_home"
-            android:drawablePadding="8dp"/>
+            android:drawablePadding="8dp"
+            app:drawableLeftCompat="@drawable/ic_home" />
 
     </LinearLayout>
 
@@ -53,11 +51,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Consultar citas"
+            android:text="@string/consultar_citas"
             android:textColor="@color/lavender"
             android:textSize="20sp"
-            android:drawableLeft="@drawable/ic_list"
-            android:drawablePadding="8dp"/>
+            android:drawablePadding="8dp"
+            app:drawableLeftCompat="@drawable/ic_list" />
 
     </LinearLayout>
 
@@ -72,11 +70,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Info de contacto"
+            android:text="@string/info_de_contacto"
             android:textColor="@color/lavender"
             android:textSize="20sp"
-            android:drawableLeft="@drawable/ic_info"
-            android:drawablePadding="8dp"/>
+            android:drawablePadding="8dp"
+            app:drawableLeftCompat="@drawable/ic_info" />
 
     </LinearLayout>
 
@@ -91,11 +89,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Código de descuento"
+            android:text="@string/descuentos"
             android:textColor="@color/lavender"
             android:textSize="20sp"
-            android:drawableLeft="@drawable/ic_scanner"
-            android:drawablePadding="8dp"/>
+            android:drawablePadding="8dp"
+            app:drawableLeftCompat="@drawable/ic_scanner" />
 
     </LinearLayout>
 
@@ -116,11 +114,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Log-out"
+            android:text="@string/log_out"
             android:textColor="@color/red"
             android:textSize="20sp"
-            android:drawableLeft="@drawable/ic_exit"
-            android:drawablePadding="8dp"/>
+            android:drawablePadding="8dp"
+            app:drawableLeftCompat="@drawable/ic_exit" />
 
     </LinearLayout>
 
@@ -131,7 +129,7 @@
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="16dp"
         android:layout_marginTop="250dp"
-        android:text="Diseñado por David Maestre Díaz ®"
+        android:text="@string/disenado_por"
         android:textColor="@color/lavender"
         android:textSize="16sp"/>
 </LinearLayout>

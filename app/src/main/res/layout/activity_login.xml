@@ -1,101 +1,105 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <!-- Agregar el logo de la aplicación -->
-        <ImageView
-            android:id="@+id/imageViewAppIcon"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="232dp"
-            android:contentDescription="Salón de belleza Lucía García"
-            android:src="@drawable/icon_login" />
+            android:layout_height="wrap_content">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayoutEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/imageViewAppIcon"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="50dp"
-            android:hint="Email">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextEmailL"
+            <!-- Agregar el logo de la aplicación -->
+            <ImageView
+                android:id="@+id/imageViewAppIcon"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="232dp"
+                android:src="@drawable/icon_login"
+                android:scaleType="fitXY"/>
 
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayoutPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textInputLayoutEmail"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="20dp"
-            android:hint="Contraseña"
-            app:endIconMode="password_toggle">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/editTextPasswordL"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword" />
+                android:layout_below="@id/imageViewAppIcon"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="50dp"
+                android:hint="@string/email">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextEmailL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-        <TextView
-            android:id="@+id/textViewForgotPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textInputLayoutPassword"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
-            android:text="¿Olvidaste tu contraseña?"
-            android:textColor="@color/lavender"
-            android:textSize="16sp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
-            android:id="@+id/buttonLoginL"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textViewForgotPassword"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="50dp"
-            android:text="Login" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayoutPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textInputLayoutEmail"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="20dp"
+                android:hint="@string/contrasena"
+                app:endIconMode="password_toggle">
 
-        <ImageButton
-            android:id="@+id/buttonLoginGoogleL"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_below="@id/buttonLoginL"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/google_border"
-            android:contentDescription="Iniciar sesión con Google"
-            android:padding="10dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/google" />
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/editTextPasswordL"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword" />
 
-        <Button
-            android:id="@+id/buttonRegisterL"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/buttonLoginGoogleL"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="20dp"
-            android:text="Registrarse" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/textViewForgotPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textInputLayoutPassword"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="50dp"
+                android:text="@string/olvidaste_contrasena"
+                android:textColor="@color/lavender"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/buttonLoginL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textViewForgotPassword"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="50dp"
+                android:text="@string/login" />
+
+            <ImageButton
+                android:id="@+id/buttonLoginGoogleL"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@id/buttonLoginL"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/google_border"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/google" />
+
+            <Button
+                android:id="@+id/buttonRegisterL"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/buttonLoginGoogleL"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/registrarse" />
+
+        </RelativeLayout>
+    </LinearLayout>
 </ScrollView>

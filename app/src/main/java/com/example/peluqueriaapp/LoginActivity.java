@@ -19,8 +19,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -92,22 +90,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         // Verificar que el correo electrónico y la contraseña no estén vacíos
         if (email.isEmpty() || password.isEmpty()) {
-            mostrarToast("Por favor, ingresa tu correo electrónico y contraseña");
+            mostrarToast(getString(R.string.ingresa_correo_y_contrasena));
             return;
         }
 
         firebaseManager.signInWithEmailAndPassword(email, password, new FirebaseManager.AuthListener() {
             @Override
             public void onAuthSuccess() {
-                mostrarToast("Inicio de sesión exitoso");
-                Intent intent = new Intent(LoginActivity.this, ReservarActivity.class);
-                startActivity(intent);
-                finish();
+                // Inicio de sesión exitoso
+                inicioSesionCorrecto();
             }
 
             @Override
             public void onAuthFailure(String errorMessage) {
-                mostrarToast("Inicio de sesión fallido");
+                mostrarToast(getString(R.string.inicio_de_sesion_fallido));
             }
         });
     }
@@ -131,7 +127,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void handleForgotPassword() {
         // Crear un cuadro de diálogo para que el usuario ingrese la nueva contraseña
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Restablecer Contraseña");
+        builder.setTitle(R.string.reset_contrasena);
         View view = getLayoutInflater().inflate(R.layout.dialog_forgot_password, null);
         builder.setView(view);
 
@@ -179,10 +175,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 firebaseManager.signInWithGoogle(account.getIdToken(), new FirebaseManager.AuthListener() {
                     @Override
                     public void onAuthSuccess() {
-                        mostrarToast("Inicio de sesión exitoso");
-                        Intent intent = new Intent(LoginActivity.this, ReservarActivity.class);
-                        startActivity(intent);
-                        finish();
+                        // Inicio de sesión exitoso
+                        inicioSesionCorrecto();
                     }
 
                     @Override
@@ -194,6 +188,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Log.w(TAG, "Google sign in failed", e);
             }
         }
+    }
+
+    private void inicioSesionCorrecto() {
+        mostrarToast(getString(R.string.inicio_de_sesion_exitoso));
+
+        firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
+            if (isAdmin) {
+                Intent intent = new Intent(LoginActivity.this, ReservarActivity.class);
+                startActivity(intent);
+                finish();
+            } else {
+                Intent intent = new Intent(LoginActivity.this, ReservarActivityClient.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        Intent intent = new Intent(LoginActivity.this, ReservarActivityClient.class);
+        startActivity(intent);
+        finish();
     }
 
     private void mostrarToast(String mensaje) {

@@ -52,7 +52,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     ImageView menu;
     TextView titulo;
     LinearLayout home, citas, info, qr, logout;
-    String[] horasDisponibles = {"10:00", "11:00", "12:00", "13:00", "15:00", "16:00", "17:00", "18:00", "19:00"};
+    String[] horasDisponibles;
     String usuarioActivo = "";
     String servicioSeleccionado = "";
 
@@ -77,7 +77,8 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_reservar);
+        setContentView(R.layout.activity_reservar_client);
+        horasDisponibles = getResources().getStringArray(R.array.horas_disponibles);
 
         firebaseManager = new FirebaseManager();
         mGoogleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN);
@@ -126,9 +127,9 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
     private void updateTitle(String userName) {
         if (!userName.isEmpty()) {
-            titulo.setText("Bienvenido, " + userName);
+            titulo.setText(getString(R.string.bienvenido_administrador) + userName);
         } else {
-            titulo.setText("Bienvenido, " + firebaseManager.getCurrentUserEmail());
+            titulo.setText(getString(R.string.bienvenido_administrador) + firebaseManager.getCurrentUserEmail());
         }
     }
 
@@ -151,11 +152,23 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         } else if (v.getId() == R.id.home) {
             recreate();
         } else if (v.getId() == R.id.citas) {
-            redirectActivity(this, ConsultarActivity.class, usuarioActivo);
+            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
+                if (isAdmin) {
+                    redirectActivity(this, ConsultarActivity.class, usuarioActivo);
+                } else {
+                    redirectActivity(this, ConsultarActivityClient.class, usuarioActivo);
+                }
+            });
         } else if (v.getId() == R.id.info) {
             redirectActivity(this, InfoActivity.class, usuarioActivo);
         } else if (v.getId() == R.id.qr) {
-            redirectActivity(this, QrActivity.class, usuarioActivo);
+            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
+                if (isAdmin) {
+                    redirectActivity(this, QrActivity.class, usuarioActivo);
+                } else {
+                    redirectActivity(this, QrActivityClient.class, usuarioActivo);
+                }
+            });
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
@@ -173,7 +186,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
     private void handleButtonSiguiente() {
         if (servicioSeleccionado.isEmpty() || precioDeServicio == 0) {
-            mostrarToast("Por favor, seleccione un servicio.");
+            mostrarToast(getString(R.string.seleccione_un_servicio));
             return;
         }
 
@@ -209,7 +222,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
     private void handleButtonReservar() {
         if (horaSeleccionada.isEmpty() || fechaSeleccionada.isEmpty()) {
-            mostrarToast("Por favor, seleccione una fecha y hora.");
+            mostrarToast(getString(R.string.seleccione_fecha_hora));
             return;
         }
 
@@ -243,7 +256,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void setupSpinnerServicios() {
-        firebaseManager.obtenerServicios(new FirebaseManager.ServiciosCallback() {
+        firebaseManager.obtenerServicios(ReservarActivity.this, new FirebaseManager.ServiciosCallback() {
             @Override
             public void onServiciosObtenidos(List<String> servicios) {
                 if (!servicios.isEmpty()) {
@@ -393,7 +406,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void mostrarMensajeNoDisponibles() {
-        mostrarToast("Lo sentimos, no hay reservas disponibles para ese día.");
+        mostrarToast(getString(R.string.no_reservas_disponibles));
     }
 
     public static void redirectActivity(Activity activity, Class secondActivity, String usuarioActivo) {
@@ -418,8 +431,8 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         // Construir notificación
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_notifications)
-                .setContentTitle("Peluquería Lucía")
-                .setContentText("Reserva confirmada!")
+                .setContentTitle(getString(R.string.title_notification))
+                .setContentText(getString(R.string.text_notification))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setAutoCancel(true);
@@ -434,6 +447,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         notificationManagerCompat.notify(1, builder.build());
     }
 
+    // Método para agregar la cita al calendario de Google
     private void agregarEventoCalendario() {
         if (fechaHoraInicio != null) {
             Calendar fechaHoraFin = (Calendar) fechaHoraInicio.clone();
@@ -442,19 +456,19 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
             DecimalFormat decimalFormat = new DecimalFormat("0.00€");
             String precioFormateado = decimalFormat.format(precioDeServicio);
 
-            String descripcionEvento = "Reserva confirmada en Salón Estética y Peluquería Lucía García.";
+            String descripcionEvento = getString(R.string.calendar_description);
             if (!servicioSeleccionado.isEmpty()) {
-                descripcionEvento += "\nServicio: " + servicioSeleccionado + "\nPrecio: " + precioFormateado;
+                descripcionEvento += "\n" + getString(R.string.servicio) + " " + servicioSeleccionado + "\n" + getString(R.string.precio) + " " + precioFormateado;
             }
             if (!anotaciones.isEmpty()) {
-                descripcionEvento += "\nAnotaciones: " + anotaciones;
+                descripcionEvento += "\n" + getString(R.string.anotaciones) + " " + anotaciones;
             }
 
             Intent intent = new Intent(Intent.ACTION_EDIT)
                     .setType("vnd.android.cursor.item/event")
-                    .putExtra(CalendarContract.Events.TITLE, "Reserva de peluquería")
+                    .putExtra(CalendarContract.Events.TITLE, getString(R.string.calendar_title))
                     .putExtra(CalendarContract.Events.DESCRIPTION, descripcionEvento)
-                    .putExtra(CalendarContract.Events.EVENT_LOCATION, "Salón Estética y Peluquería Lucía García")
+                    .putExtra(CalendarContract.Events.EVENT_LOCATION, getString(R.string.calendar_location))
                     .putExtra(CalendarContract.Events.ALL_DAY, false)
                     .putExtra(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID())
                     .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, fechaHoraInicio.getTimeInMillis())
@@ -463,7 +477,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
             startActivity(intent);
 
         } else {
-            mostrarToast("No se ha seleccionado una fecha y hora para agregar al calendario.");
+            mostrarToast(getString(R.string.seleccione_fecha_hora));
         }
     }
 
@@ -481,7 +495,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
             // Crear un intent para la clase BroadcastReceiver que manejará la alarma del día anterior
             Intent intentDiaAntes = new Intent(this, AlarmReceiver.class);
-            intentDiaAntes.putExtra("mensaje", "¡Mañana tiene una cita agendada! No lo olvide.");
+            intentDiaAntes.putExtra("mensaje", getString(R.string.dia_alarma));
             intentDiaAntes.putExtra("canal", CHANNEL_ID);
 
             // Crear un PendingIntent para la alarma del día anterior
@@ -497,7 +511,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
         // Crear un intent para la clase BroadcastReceiver que manejará la alarma de una hora antes
         Intent intentHoraAntes = new Intent(this, AlarmReceiver.class);
-        intentHoraAntes.putExtra("mensaje", "¡Su cita comenzará en 1 hora! " + servicioSeleccionado);
+        intentHoraAntes.putExtra("mensaje", getString(R.string.hora_alarma) + servicioSeleccionado);
         intentHoraAntes.putExtra("canal", CHANNEL_ID);
 
         // Crear un PendingIntent para la alarma de una hora antes
@@ -546,7 +560,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
             mGoogleSignInClient.signOut();
             finish();
         } else {
-            mostrarToast("Presiona nuevamente para salir");
+            mostrarToast(getString(R.string.press_again_to_exit));
         }
         pressedTime = System.currentTimeMillis();
     }

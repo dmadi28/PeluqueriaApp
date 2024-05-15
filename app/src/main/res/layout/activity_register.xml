@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Registro en Peluquería Lucía"
+            android:text="@string/registro_en_peluqueria_lucia"
             android:textSize="24sp"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal"
@@ -24,7 +24,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Nombre"
+            android:hint="@string/nombre"
             android:paddingBottom="20dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -38,7 +38,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
+            android:hint="@string/email"
             android:paddingBottom="20dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -53,7 +53,7 @@
             android:id="@+id/textFieldPasswordR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Contraseña"
+            android:hint="@string/contrasena"
             app:endIconMode="password_toggle"
             android:paddingBottom="20dp">
 
@@ -68,7 +68,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Confirmar Contraseña"
+            android:hint="@string/confirmar_contrasena"
             app:endIconMode="password_toggle"
             android:paddingBottom="20dp">
 
@@ -84,7 +84,7 @@
             android:id="@+id/textFieldTelefonoR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Teléfono"
+            android:hint="@string/telefono"
             android:paddingBottom="20dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -106,7 +106,7 @@
             android:id="@+id/buttonRegisterR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Registrarse" />
+            android:text="@string/registrarse" />
 
     </LinearLayout>
 </ScrollView>

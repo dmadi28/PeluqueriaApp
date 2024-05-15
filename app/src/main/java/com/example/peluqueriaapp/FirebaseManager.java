@@ -318,7 +318,7 @@ public class FirebaseManager {
     }
 
     // Método para obtener los datos de servicios desde Firestore
-    public void obtenerServicios(final ServiciosCallback callback) {
+    public void obtenerServicios(Context context, final ServiciosCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference serviciosRef;
 
@@ -338,11 +338,10 @@ public class FirebaseManager {
                 for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                     String nombreDocumento = documentSnapshot.getId();
                     if (nombreDocumento.equals("peluqueria")) {
-                        servicios.add("Servicios de Peluquería");
+                        servicios.add(context.getString(R.string.servicios_de_peluqueria));
                     } else if (nombreDocumento.equals("estetica")) {
-                        servicios.add("Servicios de Estética");
+                        servicios.add(context.getString(R.string.servicios_de_estetica));
                     }
-
                     // Agregar los servicios específicos del documento
                     Map<String, Object> data = documentSnapshot.getData();
                     for (Map.Entry<String, Object> entry : data.entrySet()) {
@@ -597,11 +596,10 @@ public class FirebaseManager {
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            // Verificar si hay algún documento que cumpla con los criterios
                             boolean codigoValido = !task.getResult().isEmpty();
+                            Log.d("FirebaseManager", "Código QR encontrado: " + codigoValido);
                             listener.onCodigoQRComprobado(codigoValido);
                         } else {
-                            // En caso de error, considerar el código QR como inválido
                             listener.onCodigoQRComprobado(false);
                             Log.e("FirebaseManager", "Error al comprobar la existencia del código QR:", task.getException());
                         }
@@ -645,4 +643,46 @@ public class FirebaseManager {
                     }
                 });
     }
+
+    public void checkAdminUser(String userEmail, final AdminCheckCallback callback) {
+        // Accede a la colección de usuarios en Firebase
+        CollectionReference usersCollection = FirebaseFirestore.getInstance().collection("usuarios");
+
+        // Realiza una consulta para encontrar al usuario con el correo electrónico proporcionado
+        Query query = usersCollection.whereEqualTo("email", userEmail);
+
+        query.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // Verifica si se encontró algún usuario con el correo electrónico proporcionado
+                if (!task.getResult().isEmpty()) {
+                    // Obtiene el primer documento (debería haber solo uno)
+                    DocumentSnapshot document = task.getResult().getDocuments().get(0);
+
+                    // Verifica si el usuario es administrador
+                    boolean isAdmin = false;
+                    if (document.contains("rol")) {
+                        String rol = document.getString("rol");
+                        if (rol != null && rol.equals("admin")) {
+                            isAdmin = true;
+                        }
+                    }
+
+                    // Llama al callback con el resultado de la verificación
+                    callback.onAdminCheckResult(isAdmin);
+                } else {
+                    // Si no se encontró ningún usuario con el correo electrónico proporcionado, no es admin
+                    callback.onAdminCheckResult(false);
+                }
+            } else {
+                // Si hubo un error en la consulta, se asume que el usuario no es admin
+                Log.e("FirebaseManager", "Error al verificar el usuario administrador:", task.getException());
+                callback.onAdminCheckResult(false);
+            }
+        });
+    }
+
+    public interface AdminCheckCallback {
+        void onAdminCheckResult(boolean isAdmin);
+    }
+
 }
