@@ -5,7 +5,7 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InfoActivity">
+    tools:context=".InfoActivityClient">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -64,6 +64,7 @@
                         android:background="#FFFFFF"
                         android:textSize="17sp"
                         android:textStyle="bold"
+                        android:textColor="@color/black"
                         android:layout_marginStart="15dp"/>
 
                 </FrameLayout>
@@ -94,7 +95,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_gravity="center_horizontal"
+                    style="@style/CustomButtonStyle"/>
 
                 <!-- Carrusel de cards con información del equipo (inicialmente invisible) -->
                 <ImageView
@@ -115,11 +117,11 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
-                    android:layout_gravity="center_horizontal" />
+                    android:layout_gravity="center_horizontal"
+                    style="@style/CustomButtonStyle"/>
 
                 <!-- Layout horizontal para los botones de Facebook e Instagram -->
                 <LinearLayout
-                    style="?android:attr/buttonBarStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -131,21 +133,21 @@
                     <!-- Botón de Instagram -->
                     <Button
                         android:id="@+id/btnInstagram"
-                        style="?android:attr/buttonBarButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/instagram"
                         android:drawableEnd="@drawable/insta"
-                        android:layout_marginEnd="10dp" />
+                        android:layout_marginEnd="10dp"
+                        style="@style/TransparentButtonStyle"/>
 
                     <!-- Botón de Facebook -->
                     <Button
                         android:id="@+id/btnFacebook"
-                        style="?android:attr/buttonBarButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/facebook"
-                        android:drawableEnd="@drawable/facebook" />
+                        android:drawableEnd="@drawable/facebook"
+                        style="@style/TransparentButtonStyle"/>
 
                 </LinearLayout>
 
@@ -161,7 +163,7 @@
         android:background="@color/white"
         android:layout_gravity="start">
 
-        <include layout="@layout/nav_drawer"/>
+        <include layout="@layout/nav_drawer_client"/>
     </RelativeLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

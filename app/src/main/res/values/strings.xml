@@ -33,12 +33,6 @@
         <item>2 años</item>
     </string-array>
 
-    <string name="one_day">1 día</string>
-    <string name="three_months">3 meses</string>
-    <string name="six_months">6 meses</string>
-    <string name="one_year">1 año</string>
-    <string name="two_years">2 años</string>
-
     <!-- XMLs -->
     <!-- XML Login -->
     <string name="email">Email</string>
@@ -58,11 +52,14 @@
     <string name="consultar_citas">Consultar citas</string>
     <string name="info_de_contacto">Info de contacto</string>
     <string name="descuentos">Descuentos</string>
+    <string name="register_as_admin">Registrar usuario como administrador</string>
+    <string name="register_as_user">Registrar administrador como usuario</string>
     <string name="log_out">Log-out</string>
     <string name="disenado_por">Diseñado por David Maestre Díaz ®</string>
     <!-- XML Reservar Cita -->
     <string name="reserva_cita">Reserva Cita</string>
     <string name="elija_su_servicio">Elija su servicio:</string>
+    <string name="elija_usuario">Elija un usuario:</string>
     <string name="elija_una_hora">Elija una hora:</string>
     <string name="siguiente">Siguiente</string>
     <string name="anadir_anotaciones">Añadir anotaciones... (opcional)</string>
@@ -70,6 +67,8 @@
     <!-- XML Consultar Citas -->
     <string name="no_tiene_citas_disponibles">No tiene citas disponibles</string>
     <string name="pulse_anular_cita">Pulse en una cita si desea anularla</string>
+    <string name="buscar">Buscar</string>
+    <string name="volver">Volver a ver todas las citas</string>
     <string name="servicio">Servicio:</string>
     <string name="precio">Precio:</string>
     <string name="anotaciones">Anotaciones:</string>
@@ -86,6 +85,7 @@
     <!-- XML QR Code -->
     <string name="generar_codigo">Generar Código</string>
     <string name="escanear_codigo">Escanear Código</string>
+    <string name="generar_descuento">Generar código de descuento</string>
     <string name="porcentaje_de_descuento">Porcentaje de descuento:</string>
     <string name="duracion_del_descuento">Duración del descuento:</string>
     <string name="generar_qr">Generar QR</string>
@@ -95,6 +95,13 @@
     <string name="descuento">Descuento (%)</string>
     <string name="menos_de_10">Menos de 10</string>
     <string name="mas_de_50">Más de 50</string>
+    <!-- XML Add Admin -->
+    <string name="convertir_a_administrador">Usuario a convertir a administrador:</string>
+    <string name="hacer_admin">Hacer Admin</string>
+    <string name="convertir_a_usuario">Administrador a convertir a usuario:</string>
+    <string name="hacer_user">Hacer Usuario</string>
+    <string name="cambiar_usuario_a_administrador">Añadir usuario como administrador</string>
+    <string name="cambiar_administrador_a_usuario">Cambiar administrador a usuario</string>
 
     <!-- Activitys -->
     <string name="press_again_to_exit">Presiona nuevamente para salir</string>
@@ -114,6 +121,7 @@
     <string name="contrasenas_no_coinciden">Las contraseñas no coinciden</string>
     <!-- ReservarActivity -->
     <string name="bienvenido_administrador">"Bienvenido administrador, "</string>
+    <string name="seleccione_usuario">Seleccione un usuario.</string>
     <string name="seleccione_un_servicio">Por favor, seleccione un servicio.</string>
     <string name="seleccione_fecha_hora">Por favor, seleccione una fecha y hora.</string>
     <string name="no_reservas_disponibles">Lo sentimos, no hay reservas disponibles para ese día.</string>
@@ -156,9 +164,23 @@
     <!-- QrActivityClient -->
     <string name="desglose_de_descuentos">Desglose de descuentos</string>
     <!-- GenerarQrActivity -->
+    <string name="one_day">1 día</string>
+    <string name="three_months">3 meses</string>
+    <string name="six_months">6 meses</string>
+    <string name="one_year">1 año</string>
+    <string name="two_years">2 años</string>
     <string name="codigo_generado_correctamente">¡Código generado correctamente!</string>
     <string name="compartir_codigo">Compartir código QR</string>
     <string name="porcentaje_de_descuento_a_aplicar">"Porcentaje de descuento a aplicar: "</string>
     <string name="fecha_de_expiracion_del_codigo">"Fecha de expiración del código: "</string>
+    <string name="id">"ID: "</string>
+    <!-- AddAdminActivity -->
+    <string name="agregar_administrador">Agregar Administrador</string>
+    <string name="usuario_a_administrador">Usuario convertido a administrador exitosamente</string>
+    <string name="error_usuario_a_administrador">Error. No se pudo convertir el usuario a administrador</string>
+    <!-- AddUserActivity -->
+    <string name="agregar_usuario">Agregar Usuario</string>
+    <string name="administrador_a_usuario">Administrador convertido a usuario exitosamente</string>
+    <string name="error_administrador_a_usuario">Error. No se pudo convertir el administrador a usuario</string>
 
 </resources>

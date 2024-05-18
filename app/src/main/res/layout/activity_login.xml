@@ -64,7 +64,6 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="50dp"
                 android:text="@string/olvidaste_contrasena"
-                android:textColor="@color/lavender"
                 android:textSize="16sp" />
 
             <Button
@@ -75,7 +74,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="50dp"
-                android:text="@string/login" />
+                android:text="@string/login"
+                style="@style/CustomButtonStyle"/>
 
             <ImageButton
                 android:id="@+id/buttonLoginGoogleL"
@@ -98,7 +98,8 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="20dp"
-                android:text="@string/registrarse" />
+                android:text="@string/registrarse"
+                style="@style/CustomButtonStyle"/>
 
         </RelativeLayout>
     </LinearLayout>

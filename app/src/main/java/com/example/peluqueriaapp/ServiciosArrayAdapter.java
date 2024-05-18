@@ -24,7 +24,7 @@ public class ServiciosArrayAdapter extends ArrayAdapter<String> {
     @Override
     public boolean isEnabled(int position) {
         String item = getItem(position);
-        return !(item != null && (item.equals("Servicios de Peluquería") || item.equals("Servicios de Estética") || (item.equals("Hairdressing Services") || item.equals("Aesthetic Services"))));
+        return !(item != null && (item.equals(getContext().getString(R.string.servicios_de_peluqueria)) || item.equals(getContext().getString(R.string.servicios_de_estetica))));
     }
 
     @NonNull

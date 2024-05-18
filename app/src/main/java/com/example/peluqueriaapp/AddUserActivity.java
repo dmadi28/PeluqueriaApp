@@ -3,13 +3,17 @@ package com.example.peluqueriaapp;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -18,13 +22,17 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
-public class QrActivityClient extends AppCompatActivity implements View.OnClickListener {
+import java.util.List;
+
+public class AddUserActivity extends AppCompatActivity implements View.OnClickListener {
 
     DrawerLayout drawerLayout;
     ImageView menu;
     TextView titulo;
-    LinearLayout home, citas, info, qr, logout;
+    LinearLayout home, citas, info, qr, admin, user, logout;
     String usuarioActivo = "";
+    Button buttonAddUser;
+    Spinner spinnerAdministradores;
     FirebaseManager firebaseManager;
     GoogleSignInClient mGoogleSignInClient;
     long pressedTime;
@@ -33,7 +41,7 @@ public class QrActivityClient extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_qr_client);
+        setContentView(R.layout.activity_add_user);
 
         usuarioActivo = getIntent().getStringExtra("usuarioActivo");
 
@@ -46,6 +54,8 @@ public class QrActivityClient extends AppCompatActivity implements View.OnClickL
         updateTitle();
         // Configurar OnClickListener de los botones
         setupOnClickListeners();
+        // Configurar Spinner de usuarios
+        setupSpinnerAdministradores();
     }
 
     private void setupViews() {
@@ -57,11 +67,16 @@ public class QrActivityClient extends AppCompatActivity implements View.OnClickL
         citas = findViewById(R.id.citas);
         info = findViewById(R.id.info);
         qr = findViewById(R.id.qr);
+        admin = findViewById(R.id.add_admin);
+        user = findViewById(R.id.add_user);
         logout = findViewById(R.id.logout);
+
+        buttonAddUser = findViewById(R.id.btnAddUser);
+        spinnerAdministradores = findViewById(R.id.spinnerAdministradores);
     }
 
     private void updateTitle() {
-        titulo.setText(R.string.desglose_de_descuentos);
+        titulo.setText(R.string.agregar_usuario);
     }
 
     private void setupOnClickListeners() {
@@ -70,27 +85,91 @@ public class QrActivityClient extends AppCompatActivity implements View.OnClickL
         citas.setOnClickListener(this);
         info.setOnClickListener(this);
         qr.setOnClickListener(this);
+        admin.setOnClickListener(this);
+        user.setOnClickListener(this);
         logout.setOnClickListener(this);
+
+        buttonAddUser.setOnClickListener(this);
     }
+
+    private void setupSpinnerAdministradores() {
+        firebaseManager.obtenerUsuariosConRolAdmin(new FirebaseManager.UsuariosCallback() {
+            @Override
+            public void onUsuariosObtenidos(List<Usuario> usuarios) {
+                // Filtrar el usuario activo para que no aparezca en el spinner
+                String emailUsuarioActivo = firebaseManager.getCurrentUserEmail();
+                Usuario usuarioActivo = null;
+                for (Usuario usuario : usuarios) {
+                    if (usuario.getEmail().equals(emailUsuarioActivo)) {
+                        usuarioActivo = usuario;
+                        break;
+                    }
+                }
+                if (usuarioActivo != null) {
+                    usuarios.remove(usuarioActivo);
+                }
+
+                if (!usuarios.isEmpty()) {
+                    UsuariosArrayAdapter adapter = new UsuariosArrayAdapter(AddUserActivity.this,
+                            android.R.layout.simple_spinner_item, usuarios);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerAdministradores.setAdapter(adapter);
+                } else {
+                    Log.e("AddUserActivity", "No se encontraron usuarios con rol 'admin'.");
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.e("AddUserActivity", "Error al obtener usuarios con rol 'admin': " + errorMessage);
+            }
+        });
+    }
+
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.menu) {
             openDrawer(drawerLayout);
         } else if (v.getId() == R.id.home) {
-            redirectActivity(this, ReservarActivityClient.class);
+            redirectActivity(this, ReservarActivityAdmin.class);
         } else if (v.getId() == R.id.citas) {
-            redirectActivity(this, ConsultarActivityClient.class, usuarioActivo);
+            redirectActivity(this, ConsultarActivityAdmin.class, usuarioActivo);
         } else if (v.getId() == R.id.info) {
-            redirectActivity(this, InfoActivityClient.class, usuarioActivo);
+            redirectActivity(this, InfoActivityAdmin.class, usuarioActivo);
         } else if (v.getId() == R.id.qr) {
+            redirectActivity(this, QrActivityAdmin.class, usuarioActivo);
+        } else if (v.getId() == R.id.add_admin) {
+            redirectActivity(this, AddAdminActivity.class, usuarioActivo);
+        } else if (v.getId() == R.id.add_user) {
             recreate();
+        } else if (v.getId() == R.id.btnAddUser) {
+            cambiarRol();
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
+        }
+    }
+
+    private void cambiarRol() {
+        // Obtener el usuario seleccionado del Spinner
+        Usuario usuarioSeleccionado = (Usuario) spinnerAdministradores.getSelectedItem();
+        if (usuarioSeleccionado != null) {
+            String userEmail = usuarioSeleccionado.getEmail();
+            firebaseManager.cambiarRolAdminUsuario(userEmail, new FirebaseManager.FirebaseCallback() {
+                @Override
+                public void onSuccess() {
+                    mostrarToast(getString(R.string.administrador_a_usuario));
+                }
+
+                @Override
+                public void onError(String errorMessage) {
+                    mostrarToast(getString(R.string.error_administrador_a_usuario));
+                }
+            });
         }
     }
 

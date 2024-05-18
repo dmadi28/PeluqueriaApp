@@ -33,12 +33,6 @@
         <item>2 years</item>
     </string-array>
 
-    <string name="one_day">1 day</string>
-    <string name="three_months">3 months</string>
-    <string name="six_months">6 months</string>
-    <string name="one_year">1 year</string>
-    <string name="two_years">2 years</string>
-
     <!-- XMLs -->
     <!-- XML Login -->
     <string name="email">Email</string>
@@ -58,11 +52,14 @@
     <string name="consultar_citas">Consult Appointments</string>
     <string name="info_de_contacto">Contact Information</string>
     <string name="descuentos">Discounts</string>
+    <string name="register_as_admin">Register user as admin</string>
+    <string name="register_as_user">Register admin as user</string>
     <string name="log_out">Log-out</string>
     <string name="disenado_por">Designed by David Maestre Díaz ®</string>
     <!-- XML Reservar Cita -->
     <string name="reserva_cita">Appointment Booking</string>
     <string name="elija_su_servicio">Choose your service:</string>
+    <string name="elija_usuario">Choose a user:</string>
     <string name="elija_una_hora">Choose a time:</string>
     <string name="siguiente">Next</string>
     <string name="anadir_anotaciones">Add notes... (optional)</string>
@@ -70,6 +67,8 @@
     <!-- XML Consultar Citas -->
     <string name="no_tiene_citas_disponibles">You have no available appointments</string>
     <string name="pulse_anular_cita">Tap on an appointment if you want to cancel it</string>
+    <string name="buscar">Search</string>
+    <string name="volver">Return to see all appointments</string>
     <string name="servicio">Service:</string>
     <string name="precio">Price:</string>
     <string name="anotaciones">Notes:</string>
@@ -86,6 +85,7 @@
     <!-- XML QR Code -->
     <string name="generar_codigo">Generate Code</string>
     <string name="escanear_codigo">Scan Code</string>
+    <string name="generar_descuento">Generate discount code</string>
     <string name="porcentaje_de_descuento">Discount Percentage:</string>
     <string name="duracion_del_descuento">Discount Duration:</string>
     <string name="generar_qr">Generate QR</string>
@@ -95,6 +95,13 @@
     <string name="descuento">Discount (%)</string>
     <string name="menos_de_10">Less than 10</string>
     <string name="mas_de_50">More than 50</string>
+    <!-- XML Add Admin -->
+    <string name="convertir_a_administrador">User to convert to administrator:</string>
+    <string name="hacer_admin">Make Admin</string>
+    <string name="convertir_a_usuario">Administrator to convert to user:</string>
+    <string name="hacer_user">Make User</string>
+    <string name="cambiar_usuario_a_administrador">Add user as administrator</string>
+    <string name="cambiar_administrador_a_usuario">Change administrator to user</string>
 
     <!-- Activitys -->
     <string name="press_again_to_exit">Press again to exit</string>
@@ -114,6 +121,7 @@
     <string name="contrasenas_no_coinciden">Passwords do not match</string>
     <!-- ReservarActivity -->
     <string name="bienvenido_administrador">"Welcome administrator, "</string>
+    <string name="seleccione_usuario">Please select a user.</string>
     <string name="seleccione_un_servicio">Please select a service.</string>
     <string name="seleccione_fecha_hora">Please select a date and time.</string>
     <string name="no_reservas_disponibles">Sorry, there are no available bookings for that day.</string>
@@ -156,9 +164,23 @@
     <!-- QrActivityClient -->
     <string name="desglose_de_descuentos">Discounts Breakdown</string>
     <!-- GenerarQrActivity -->
+    <string name="one_day">1 day</string>
+    <string name="three_months">3 months</string>
+    <string name="six_months">6 months</string>
+    <string name="one_year">1 year</string>
+    <string name="two_years">2 years</string>
     <string name="codigo_generado_correctamente">Code generated successfully!</string>
     <string name="compartir_codigo">Share QR code</string>
     <string name="porcentaje_de_descuento_a_aplicar">"Percentage discount to apply: "</string>
     <string name="fecha_de_expiracion_del_codigo">"Expiration date of the code: "</string>
+    <string name="id">"ID: "</string>
+    <!-- AddAdminActivity -->
+    <string name="agregar_administrador">Add Admin</string>
+    <string name="usuario_a_administrador">User converted to administrator successfully</string>
+    <string name="error_usuario_a_administrador">Error. Could not convert user to administrator</string>
+    <!-- AddUserActivity -->
+    <string name="agregar_usuario">Add User</string>
+    <string name="administrador_a_usuario">Administrator converted to user successfully</string>
+    <string name="error_administrador_a_usuario">Error. Could not convert administrator to user</string>
 
 </resources>

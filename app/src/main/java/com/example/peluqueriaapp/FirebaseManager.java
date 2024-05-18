@@ -226,6 +226,7 @@ public class FirebaseManager {
         usuario.put("email", email);
         usuario.put("telefono", telefono);
         usuario.put("genero", genero);
+        usuario.put("rol", "usuario");
 
         // Añadir el nuevo documento a la colección "usuarios"
         db.collection("usuarios").document(email)
@@ -255,6 +256,7 @@ public class FirebaseManager {
         usuario.put("email", email);
         usuario.put("telefono", "");
         usuario.put("genero", "");
+        usuario.put("rol", "usuario");
 
         // Añadir el nuevo documento a la colección "usuarios"
         db.collection("usuarios").document(email)
@@ -399,7 +401,7 @@ public class FirebaseManager {
         void onError(String errorMessage);
     }
 
-    // Método para obtener citas por usuario
+    // Método para obtener las citas de un usuario específico
     public void obtenerCitasPorUsuario(String usuarioActivo, CitasCallback callback) {
         CollectionReference citasRef = db.collection("citas");
 
@@ -420,6 +422,27 @@ public class FirebaseManager {
                         }
                     }
                 });
+    }
+
+    // Método para obtener todas las citas de la base de datos
+    public void obtenerTodasLasCitas(CitasCallback callback) {
+        CollectionReference citasRef = db.collection("citas");
+
+        citasRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<Cita> citasList = new ArrayList<>();
+                    for (DocumentSnapshot document : task.getResult()) {
+                        Cita cita = document.toObject(Cita.class);
+                        citasList.add(cita);
+                    }
+                    callback.onCitasObtenidas(citasList);
+                } else {
+                    callback.onError(task.getException().getMessage());
+                }
+            }
+        });
     }
 
     // Interfaz para manejar el resultado de obtener citas
@@ -568,12 +591,13 @@ public class FirebaseManager {
     }
 
     // Método para crear un nuevo código de desuento
-    public void crearCodigo(String porcentaje, String fechaExpiracion) {
+    public void crearCodigo(String porcentaje, String fechaExpiracion, String idUnico) {
         // Crear un nuevo documento en la colección "codigos" con un ID autogenerado
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Map<String, Object> codigo = new HashMap<>();
         codigo.put("porcentaje", porcentaje);
         codigo.put("fechaExpiracion", fechaExpiracion);
+        codigo.put("id", idUnico);
 
         db.collection("codigos")
                 .add(codigo)
@@ -586,13 +610,11 @@ public class FirebaseManager {
     }
 
     // Método para comprobar la existencia del código QR en la base de datos
-    public void comprobarExistenciaCodigoQR(String porcentaje, String fechaExpiracion, OnCodigoQRComprobadoListener listener) {
-
-        if (porcentaje != null && fechaExpiracion != null) {
+    public void comprobarExistenciaCodigoQR(String idUnico, OnCodigoQRComprobadoListener listener) {
+        if (idUnico != null) {
             // Consultar la base de datos para verificar la existencia del código QR
             db.collection("codigos")
-                    .whereEqualTo("porcentaje", porcentaje)
-                    .whereEqualTo("fechaExpiracion", fechaExpiracion)
+                    .whereEqualTo("id", idUnico)
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -606,7 +628,7 @@ public class FirebaseManager {
                     });
         } else {
             listener.onCodigoQRComprobado(false);
-            Log.d("FirebaseManager", "Porcentaje o fecha de expiración nulos. Código QR inválido.");
+            Log.d("FirebaseManager", "ID único nulo. Código QR inválido.");
         }
     }
 
@@ -616,10 +638,9 @@ public class FirebaseManager {
     }
 
     // Método para eliminar un código QR de la base de datos
-    public void eliminarCodigoQR(String porcentaje, String fechaExpiracion) {
+    public void eliminarCodigoQR(String idUnico) {
         db.collection("codigos")
-                .whereEqualTo("porcentaje", porcentaje)
-                .whereEqualTo("fechaExpiracion", fechaExpiracion)
+                .whereEqualTo("id", idUnico)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -644,6 +665,7 @@ public class FirebaseManager {
                 });
     }
 
+    // Método para verificar si un usuario es administrador
     public void checkAdminUser(String userEmail, final AdminCheckCallback callback) {
         // Accede a la colección de usuarios en Firebase
         CollectionReference usersCollection = FirebaseFirestore.getInstance().collection("usuarios");
@@ -681,8 +703,143 @@ public class FirebaseManager {
         });
     }
 
+    // Interfaz para manejar el resultado de la comprobación de administrador
     public interface AdminCheckCallback {
         void onAdminCheckResult(boolean isAdmin);
+    }
+
+    // Método para obtener los usuarios con rol usuario
+    public void obtenerUsuariosConRolUsuario(final FirebaseManager.UsuariosCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usuariosRef = db.collection("usuarios");
+
+        usuariosRef.whereEqualTo("rol", "usuario")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<Usuario> usuarios = new ArrayList<>();
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Usuario usuario = documentSnapshot.toObject(Usuario.class);
+                            usuarios.add(usuario);
+                        }
+                        callback.onUsuariosObtenidos(usuarios);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.onError(e.getMessage());
+                    }
+                });
+    }
+
+    // Método para obtener los usuarios con rol admin
+    public void obtenerUsuariosConRolAdmin(final FirebaseManager.UsuariosCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usuariosRef = db.collection("usuarios");
+
+        usuariosRef.whereEqualTo("rol", "admin")
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        List<Usuario> usuarios = new ArrayList<>();
+                        for (QueryDocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            Usuario usuario = documentSnapshot.toObject(Usuario.class);
+                            usuarios.add(usuario);
+                        }
+                        callback.onUsuariosObtenidos(usuarios);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.onError(e.getMessage());
+                    }
+                });
+    }
+
+    // Interfaz para manejar el resultado de la obtención de usuarios
+    public interface UsuariosCallback {
+        void onUsuariosObtenidos(List<Usuario> usuarios);
+        void onError(String errorMessage);
+    }
+
+    // Método para cambiar el rol de un usuario a administrador
+    public void cambiarRolUsuarioAdmin(String userEmail, final FirebaseCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usuariosRef = db.collection("usuarios");
+
+        usuariosRef.whereEqualTo("email", userEmail).get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            // Cambiar el rol del usuario a administrador
+                            document.getReference().update("rol", "admin")
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            callback.onSuccess();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            callback.onError(e.getMessage());
+                                        }
+                                    });
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.onError(e.getMessage());
+                    }
+                });
+    }
+
+    // Método para cambiar el rol de un administrador a usuario
+    public void cambiarRolAdminUsuario(String userEmail, final FirebaseCallback callback) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usuariosRef = db.collection("usuarios");
+
+        usuariosRef.whereEqualTo("email", userEmail).get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                            // Cambiar el rol del administrador a usuario
+                            document.getReference().update("rol", "usuario")
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            callback.onSuccess();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            callback.onError(e.getMessage());
+                                        }
+                                    });
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        callback.onError(e.getMessage());
+                    }
+                });
+    }
+
+    // Interfaz de devolución de llamada para manejar el éxito o el error de las operaciones de Firebase
+    public interface FirebaseCallback {
+        void onSuccess();
+        void onError(String errorMessage);
     }
 
 }

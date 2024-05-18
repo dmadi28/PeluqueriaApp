@@ -6,7 +6,7 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ReservarActivity">
+    tools:context=".ReservarActivityAdmin">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,7 +23,28 @@
             android:textStyle="bold"
             android:textSize="24sp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            style="@style/CustomTextViewStyle"/>
+
+        <!-- Texto "Elija usuario:" -->
+        <TextView
+            android:id="@+id/textViewUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/elija_usuario"
+            android:textSize="18sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            style="@style/CustomTextViewStyle"/>
+
+        <!-- Spinner para usuarios -->
+        <Spinner
+            android:id="@+id/spinnerUsuarios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"/>
 
         <!-- Texto "Elija su servicio:" -->
         <TextView
@@ -33,7 +54,8 @@
             android:text="@string/elija_su_servicio"
             android:textSize="18sp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp"
+            style="@style/CustomTextViewStyle"/>
 
         <!-- Spinner para servicios -->
         <Spinner
@@ -53,7 +75,8 @@
             android:text="@string/elija_una_hora"
             android:textSize="18sp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp"
+            style="@style/CustomTextViewStyle"/>
 
         <!-- CardView con calendario -->
         <androidx.cardview.widget.CardView
@@ -88,7 +111,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/siguiente"
                         android:drawableEnd="@drawable/ic_navigate"
-                        android:layout_marginTop="16dp"/>
+                        android:layout_marginTop="16dp"
+                        style="@style/CustomButtonStyle"/>
 
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
@@ -120,6 +144,7 @@
                         android:id="@+id/buttonBack"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="10dp"
                         android:background="?attr/selectableItemBackground"
                         android:src="@drawable/ic_back"/>
 
@@ -131,7 +156,8 @@
                         android:text="@string/no_reservas_disponibles"
                         android:textAppearance="?android:textAppearanceMedium"
                         android:visibility="gone"
-                        android:layout_marginTop="16dp"/>
+                        android:layout_marginTop="16dp"
+                        style="@style/CustomTextViewStyle"/>
 
                     <RadioGroup
                         android:id="@+id/radioGroupHoras"
@@ -147,7 +173,8 @@
                         android:hint="@string/anadir_anotaciones"
                         android:inputType="textMultiLine"
                         android:maxLength="50"
-                        android:layout_marginTop="16dp"/>
+                        android:layout_marginTop="16dp"
+                        style="@style/CustomEditTextStyle"/>
 
                     <!-- Botón "Reservar" dentro del LinearLayout -->
                     <Button
@@ -156,7 +183,8 @@
                         android:layout_height="wrap_content"
                         android:text="@string/reservar"
                         android:drawableEnd="@drawable/ic_shopping_cart"
-                        android:layout_marginTop="16dp"/>
+                        android:layout_marginTop="16dp"
+                        style="@style/CustomButtonStyle"/>
 
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
@@ -171,7 +199,7 @@
         android:background="@color/white"
         android:layout_gravity="start">
 
-        <include layout="@layout/nav_drawer"/>
+        <include layout="@layout/nav_drawer_admin"/>
     </RelativeLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

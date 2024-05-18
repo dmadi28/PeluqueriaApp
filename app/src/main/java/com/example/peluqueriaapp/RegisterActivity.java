@@ -39,7 +39,6 @@ public class RegisterActivity extends AppCompatActivity {
                     String nombre = editTextNombre.getText().toString();
                     String email = editTextEmail.getText().toString();
                     String password = editTextPassword.getText().toString();
-                    String confirmPassword = editTextPassword2.getText().toString();
                     String telefono = editTextTelefono.getText().toString();
                     String genero = spinnerGenero.getSelectedItem().toString();
 

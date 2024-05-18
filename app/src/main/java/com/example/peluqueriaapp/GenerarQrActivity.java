@@ -32,13 +32,14 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 public class GenerarQrActivity extends AppCompatActivity implements View.OnClickListener {
 
     DrawerLayout drawerLayout;
     ImageView menu;
     TextView titulo;
-    LinearLayout home, citas, info, qr, logout;
+    LinearLayout home, citas, info, qr, admin, user, logout;
     CardView cardViewQr;
     Button buttonGenerarQr;
     Spinner spinnerPorcentaje, spinnerDuracion;
@@ -83,6 +84,8 @@ public class GenerarQrActivity extends AppCompatActivity implements View.OnClick
         citas = findViewById(R.id.citas);
         info = findViewById(R.id.info);
         qr = findViewById(R.id.qr);
+        admin = findViewById(R.id.add_admin);
+        user = findViewById(R.id.add_user);
         logout = findViewById(R.id.logout);
 
         spinnerPorcentaje = findViewById(R.id.spinnerPorcentaje);
@@ -103,7 +106,10 @@ public class GenerarQrActivity extends AppCompatActivity implements View.OnClick
         citas.setOnClickListener(this);
         info.setOnClickListener(this);
         qr.setOnClickListener(this);
+        admin.setOnClickListener(this);
+        user.setOnClickListener(this);
         logout.setOnClickListener(this);
+
         buttonGenerarQr.setOnClickListener(this);
         fabCompartirQR.setOnClickListener(this);
     }
@@ -113,31 +119,17 @@ public class GenerarQrActivity extends AppCompatActivity implements View.OnClick
         if (v.getId() == R.id.menu) {
             openDrawer(drawerLayout);
         } else if (v.getId() == R.id.home) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, ReservarActivity.class);
-                } else {
-                    redirectActivity(this, ReservarActivityClient.class);
-                }
-            });
+            redirectActivity(this, ReservarActivityAdmin.class);
         } else if (v.getId() == R.id.citas) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, ConsultarActivity.class, usuarioActivo);
-                } else {
-                    redirectActivity(this, ConsultarActivityClient.class, usuarioActivo);
-                }
-            });
+            redirectActivity(this, ConsultarActivityAdmin.class, usuarioActivo);
         } else if (v.getId() == R.id.info) {
-            redirectActivity(this, InfoActivity.class, usuarioActivo);
+            redirectActivity(this, InfoActivityAdmin.class, usuarioActivo);
         } else if (v.getId() == R.id.qr) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, QrActivity.class, usuarioActivo);
-                } else {
-                    redirectActivity(this, QrActivityClient.class, usuarioActivo);
-                }
-            });
+            redirectActivity(this, QrActivityAdmin.class, usuarioActivo);
+        } else if (v.getId() == R.id.add_admin) {
+            redirectActivity(this, AddAdminActivity.class, usuarioActivo);
+        } else if (v.getId() == R.id.add_user) {
+            redirectActivity(this, AddUserActivity.class, usuarioActivo);
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
@@ -224,12 +216,17 @@ public class GenerarQrActivity extends AppCompatActivity implements View.OnClick
         // Formatear la fecha como un texto con el formato "año-mes-día"
         String textoFechaExpiracion = formatDate(fechaExpiracion);
 
+        // Generar un ID único
+        String idUnico = UUID.randomUUID().toString();
+
         // Generar el código QR con el porcentaje seleccionado
         String textoQR = getString(R.string.porcentaje_de_descuento_a_aplicar) + porcentajeSeleccionado + "\n" +
-                getString(R.string.fecha_de_expiracion_del_codigo) + textoFechaExpiracion + "\n";
+                getString(R.string.fecha_de_expiracion_del_codigo) + textoFechaExpiracion + "\n" +
+                getString(R.string.id) + idUnico;
         generarCodigoQR(textoQR);
 
-        firebaseManager.crearCodigo(porcentajeSeleccionado, textoFechaExpiracion);
+        // Guardar el código en Firebase
+        firebaseManager.crearCodigo(porcentajeSeleccionado, textoFechaExpiracion, idUnico);
 
         mostrarToast(getString(R.string.codigo_generado_correctamente));
 

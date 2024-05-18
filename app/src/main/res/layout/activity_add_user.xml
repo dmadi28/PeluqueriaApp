@@ -1,0 +1,88 @@
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddUserActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include layout="@layout/toolbar"/>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_margin="30dp">
+
+                <!-- Título -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cambiar_administrador_a_usuario"
+                    android:textSize="23sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingTop="30dp"
+                    android:paddingBottom="20dp"/>
+
+                <ImageView
+                    android:id="@+id/imageViewAdminToUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="232dp"
+                    android:layout_marginBottom="50dp"
+                    android:layout_marginTop="50dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/admin_to_user" />
+
+                <!-- Añade el TextView de "Admin" -->
+                <TextView
+                    android:id="@+id/textViewAdmin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/convertir_a_usuario"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:padding="8dp"/>
+
+                <!-- Añade el Spinner de administradores -->
+                <Spinner
+                    android:id="@+id/spinnerAdministradores"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"/>
+
+                <!-- Añade el botón de "Hacer User" -->
+                <Button
+                    android:id="@+id/btnAddUser"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/hacer_user"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="50dp"
+                    android:padding="8dp"
+                    style="@style/CustomButtonStyle"/>
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:layout_gravity="start">
+
+        <include layout="@layout/nav_drawer_admin"/>
+    </RelativeLayout>
+
+</androidx.drawerlayout.widget.DrawerLayout>

@@ -106,7 +106,8 @@
             android:id="@+id/buttonRegisterR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/registrarse" />
+            android:text="@string/registrarse"
+            style="@style/CustomButtonStyle"/>
 
     </LinearLayout>
 </ScrollView>

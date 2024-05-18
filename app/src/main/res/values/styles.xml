@@ -1,0 +1,18 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Custom style for TextView in the application -->
+    <style name="CustomTextViewStyle" parent="TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- Custom style for EditText in the application -->
+    <style name="CustomEditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:textColorHint">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <!-- Custom style for Button with white text and transparent background -->
+    <style name="TransparentButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+</resources>

@@ -4,9 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#E65B5B</color>
     <color name="lavender">#C36F6FA8</color>
-    <color name="colorOnSurface">#000000</color>
-    <color name="colorOnSurfaceVariant">#808080</color>
-    <color name="colorPrimary">#FF000000</color>
-    <color name="colorAccent">#FF0000FF</color>
+    <color name="colorOnSurface">#FFFFFF</color>
+    <color name="colorOnSurfaceVariant">#B3B3B3</color>
+    <color name="colorPrimary">#FFFFFFFF</color>
+    <color name="colorAccent">#FFFF0000</color>
 </resources>
-

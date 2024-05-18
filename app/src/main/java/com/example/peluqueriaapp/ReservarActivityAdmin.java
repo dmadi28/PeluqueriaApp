@@ -2,7 +2,6 @@ package com.example.peluqueriaapp;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,7 +9,6 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -37,21 +35,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
 
-public class ReservarActivity extends AppCompatActivity implements View.OnClickListener {
+public class ReservarActivityAdmin extends AppCompatActivity implements View.OnClickListener {
 
     DrawerLayout drawerLayout;
     ImageView menu;
     TextView titulo;
-    LinearLayout home, citas, info, qr, logout;
+    LinearLayout home, citas, info, qr, admin, user, logout;
     String[] horasDisponibles;
     String usuarioActivo = "";
     String servicioSeleccionado = "";
@@ -61,13 +57,12 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     String horaSeleccionada = "";
     Calendar fechaHoraInicio;
     String anotaciones = "";
-    Spinner spinnerServicios;
+    Spinner spinnerUsuarios, spinnerServicios;
     DatePicker calendario;
     RadioGroup radioGroupHoras;
     EditText etAnotaciones;
     Button buttonSiguiente, buttonReservar;
     ImageButton buttonBack;
-
     FirebaseManager firebaseManager;
     GoogleSignInClient mGoogleSignInClient;
     final String CHANNEL_ID = "canal";
@@ -77,7 +72,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_reservar_client);
+        setContentView(R.layout.activity_reservar_admin);
         horasDisponibles = getResources().getStringArray(R.array.horas_disponibles);
 
         firebaseManager = new FirebaseManager();
@@ -88,6 +83,20 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         // Asignar las vistas de los layout a los elementos
         setupViews();
         // Obtener el nombre del usuario y actualizar el título
+        updateTitle();
+        // Configurar OnClickListener de los botones
+        setupOnClickListeners();
+        // Configurar Spinner de usuarios
+        setupSpinnerUsuarios();
+        // Configurar Spinner de servicios
+        setupSpinnerServicios();
+        // Configurar el calendario de citas
+        setupCalendario();
+        // Configurar RadioGroup de horas disponibles
+        setupRadioGroupHoras();
+    }
+
+    private void updateTitle() {
         firebaseManager.getCurrentUserName(firebaseManager.getCurrentUserEmail(), new FirebaseManager.UserNameCallback() {
             @Override
             public void onUserNameReceived(String userName) {
@@ -95,14 +104,6 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
                 updateTitle(userName);
             }
         });
-        // Configurar OnClickListener de los botones
-        setupOnClickListeners();
-        // Configurar Spinner de servicios
-        setupSpinnerServicios();
-        // Configurar el calendario de citas
-        setupCalendario();
-        // Configurar RadioGroup de horas disponibles
-        setupRadioGroupHoras();
     }
 
     private void setupViews() {
@@ -114,8 +115,11 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         citas = findViewById(R.id.citas);
         info = findViewById(R.id.info);
         qr = findViewById(R.id.qr);
+        admin = findViewById(R.id.add_admin);
+        user = findViewById(R.id.add_user);
         logout = findViewById(R.id.logout);
 
+        spinnerUsuarios = findViewById(R.id.spinnerUsuarios);
         spinnerServicios = findViewById(R.id.spinnerServicios);
         calendario = findViewById(R.id.calendarView);
         buttonSiguiente = findViewById(R.id.buttonSiguiente);
@@ -139,7 +143,10 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         citas.setOnClickListener(this);
         info.setOnClickListener(this);
         qr.setOnClickListener(this);
+        admin.setOnClickListener(this);
+        user.setOnClickListener(this);
         logout.setOnClickListener(this);
+
         buttonSiguiente.setOnClickListener(this);
         buttonBack.setOnClickListener(this);
         buttonReservar.setOnClickListener(this);
@@ -152,23 +159,15 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         } else if (v.getId() == R.id.home) {
             recreate();
         } else if (v.getId() == R.id.citas) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, ConsultarActivity.class, usuarioActivo);
-                } else {
-                    redirectActivity(this, ConsultarActivityClient.class, usuarioActivo);
-                }
-            });
+            redirectActivity(this, ConsultarActivityAdmin.class, usuarioActivo);
         } else if (v.getId() == R.id.info) {
-            redirectActivity(this, InfoActivity.class, usuarioActivo);
+            redirectActivity(this, InfoActivityAdmin.class, usuarioActivo);
         } else if (v.getId() == R.id.qr) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, QrActivity.class, usuarioActivo);
-                } else {
-                    redirectActivity(this, QrActivityClient.class, usuarioActivo);
-                }
-            });
+            redirectActivity(this, QrActivityAdmin.class, usuarioActivo);
+        }  else if (v.getId() == R.id.add_admin) {
+            redirectActivity(this, AddAdminActivity.class, usuarioActivo);
+        }  else if (v.getId() == R.id.add_user) {
+            redirectActivity(this, AddUserActivity.class, usuarioActivo);
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
@@ -192,10 +191,10 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
         int dia = calendario.getDayOfMonth();
         int mes = calendario.getMonth();
-        int año = calendario.getYear();
+        int anyo = calendario.getYear();
 
         Calendar fechaElegida = Calendar.getInstance();
-        fechaElegida.set(año, mes, dia);
+        fechaElegida.set(anyo, mes, dia);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         fechaSeleccionada = dateFormat.format(fechaElegida.getTime());
 
@@ -215,12 +214,27 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
     private void handleButtonBack() {
         radioGroupHoras.removeAllViews();
         findViewById(R.id.cvHora).setVisibility(View.GONE);
+        findViewById(R.id.textNoReservas).setVisibility(View.GONE);
+        etAnotaciones.setVisibility(View.VISIBLE);
+        buttonReservar.setVisibility(View.VISIBLE);
         findViewById(R.id.textViewServicio).setVisibility(View.VISIBLE);
         findViewById(R.id.spinnerServicios).setVisibility(View.VISIBLE);
         findViewById(R.id.cvCalendario).setVisibility(View.VISIBLE);
+        findViewById(R.id.textViewUsuario).setVisibility(View.VISIBLE);
+        findViewById(R.id.spinnerUsuarios).setVisibility(View.VISIBLE);
     }
 
     private void handleButtonReservar() {
+        // Obtener el usuario seleccionado del Spinner
+        Usuario usuarioSeleccionado = (Usuario) spinnerUsuarios.getSelectedItem();
+        if (usuarioSeleccionado == null) {
+            mostrarToast(getString(R.string.seleccione_usuario));
+            return;
+        }
+
+        // Obtener el email del usuario seleccionado
+        String emailUsuario = usuarioSeleccionado.getEmail();
+
         if (horaSeleccionada.isEmpty() || fechaSeleccionada.isEmpty()) {
             mostrarToast(getString(R.string.seleccione_fecha_hora));
             return;
@@ -239,7 +253,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
         anotaciones = etAnotaciones.getText().toString();
 
-        Cita nuevaCita = new Cita(usuarioActivo, servicioSeleccionado, precioDeServicio, fechaSeleccionada, horaSeleccionada, anotaciones);
+        Cita nuevaCita = new Cita(emailUsuario, servicioSeleccionado, precioDeServicio, fechaSeleccionada, horaSeleccionada, anotaciones);
 
         firebaseManager.registrarCita(nuevaCita);
 
@@ -249,18 +263,15 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
             mostrarNotificacionReserva();
         }
 
-        agregarEventoCalendario();
-        configurarAlarmas(fechaHoraInicio);
-
         limpiarCampos();
     }
 
     private void setupSpinnerServicios() {
-        firebaseManager.obtenerServicios(ReservarActivity.this, new FirebaseManager.ServiciosCallback() {
+        firebaseManager.obtenerServicios(ReservarActivityAdmin.this, new FirebaseManager.ServiciosCallback() {
             @Override
             public void onServiciosObtenidos(List<String> servicios) {
                 if (!servicios.isEmpty()) {
-                    ServiciosArrayAdapter adapter = new ServiciosArrayAdapter(ReservarActivity.this,
+                    ServiciosArrayAdapter adapter = new ServiciosArrayAdapter(ReservarActivityAdmin.this,
                             android.R.layout.simple_spinner_item, servicios);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinnerServicios.setAdapter(adapter);
@@ -284,6 +295,27 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+    }
+
+    private void setupSpinnerUsuarios() {
+        firebaseManager.obtenerUsuariosConRolUsuario(new FirebaseManager.UsuariosCallback() {
+            @Override
+            public void onUsuariosObtenidos(List<Usuario> usuarios) {
+                if (!usuarios.isEmpty()) {
+                    UsuariosArrayAdapter adapter = new UsuariosArrayAdapter(ReservarActivityAdmin.this,
+                            android.R.layout.simple_spinner_item, usuarios);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinnerUsuarios.setAdapter(adapter);
+                } else {
+                    Log.e("ReservarActivityAdmin", "No se encontraron usuarios con rol 'usuario'.");
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.e("ReservarActivityAdmin", "Error al obtener usuarios con rol 'usuario': " + errorMessage);
             }
         });
     }
@@ -332,33 +364,36 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
 
         radioGroupHoras.removeAllViews();
         findViewById(R.id.cvHora).setVisibility(View.GONE);
+        findViewById(R.id.textViewUsuario).setVisibility(View.VISIBLE);
+        findViewById(R.id.spinnerUsuarios).setVisibility(View.VISIBLE);
         findViewById(R.id.textViewServicio).setVisibility(View.VISIBLE);
         findViewById(R.id.spinnerServicios).setVisibility(View.VISIBLE);
         findViewById(R.id.cvCalendario).setVisibility(View.VISIBLE);
     }
 
+    // Método para mostrar las horas disponibles y ocultar los elementos relacionados con la selección de servicios y fechas
     private void mostrarHorasDisponibles(List<String> horasReservadas, Calendar fechaElegida) {
         radioGroupHoras.removeAllViews();
 
         Calendar fechaActual = Calendar.getInstance();
 
-        // Verificar si el día seleccionado es sábado
+        // Verificar si el día seleccionado es sábado para reducir la jornada
         if (fechaElegida.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-            // Iterar sobre las horas disponibles
-            boolean horasDisponiblesEncontradas = false;
+            boolean alMenosUnaHoraDisponible = false;
+
             for (String hora : horasDisponibles) {
                 // Obtener la hora seleccionada
                 int horaSeleccionada = Integer.parseInt(hora.split(":")[0]);
                 // Verificar si la hora es menor o igual a 13:00 y no está reservada
                 if (horaSeleccionada <= 13 && !horasReservadas.contains(hora)) {
-                    RadioButton radioButton = new RadioButton(ReservarActivity.this);
+                    RadioButton radioButton = new RadioButton(ReservarActivityAdmin.this);
                     radioButton.setText(hora);
                     radioGroupHoras.addView(radioButton);
-                    horasDisponiblesEncontradas = true;
+                    alMenosUnaHoraDisponible = true;
                 }
             }
-            // Si no se encontraron horas disponibles
-            if (!horasDisponiblesEncontradas) {
+
+            if (!alMenosUnaHoraDisponible) {
                 mostrarMensajeNoDisponibles();
                 return;
             }
@@ -367,44 +402,47 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
             mostrarMensajeNoDisponibles();
             return;
         } else { // Para otros días de la semana
-            if (horasReservadas.size() == horasDisponibles.length) {
-                findViewById(R.id.textNoReservas).setVisibility(View.VISIBLE);
-                etAnotaciones.setVisibility(View.GONE);
-                buttonReservar.setVisibility(View.GONE);
-            } else {
-                findViewById(R.id.textNoReservas).setVisibility(View.GONE);
-                etAnotaciones.setVisibility(View.VISIBLE);
-                buttonReservar.setVisibility(View.VISIBLE);
+            boolean alMenosUnaHoraDisponible = false;
 
-                for (String hora : horasDisponibles) {
-                    int horaSeleccionada = Integer.parseInt(hora.split(":")[0]);
+            for (String hora : horasDisponibles) {
+                int horaSeleccionada = Integer.parseInt(hora.split(":")[0]);
 
-                    if (fechaElegida.get(Calendar.YEAR) == fechaActual.get(Calendar.YEAR) &&
-                            fechaElegida.get(Calendar.MONTH) == fechaActual.get(Calendar.MONTH) &&
-                            fechaElegida.get(Calendar.DAY_OF_MONTH) == fechaActual.get(Calendar.DAY_OF_MONTH)) {
-                        int horaActual = fechaActual.get(Calendar.HOUR_OF_DAY);
-                        if (horaSeleccionada > horaActual && !horasReservadas.contains(hora)) {
-                            RadioButton radioButton = new RadioButton(ReservarActivity.this);
-                            radioButton.setText(hora);
-                            radioGroupHoras.addView(radioButton);
-                        }
-                    } else {
-                        if (!horasReservadas.contains(hora)) {
-                            RadioButton radioButton = new RadioButton(ReservarActivity.this);
-                            radioButton.setText(hora);
-                            radioGroupHoras.addView(radioButton);
-                        }
+                if (fechaElegida.get(Calendar.YEAR) == fechaActual.get(Calendar.YEAR) &&
+                        fechaElegida.get(Calendar.MONTH) == fechaActual.get(Calendar.MONTH) &&
+                        fechaElegida.get(Calendar.DAY_OF_MONTH) == fechaActual.get(Calendar.DAY_OF_MONTH)) {
+                    int horaActual = fechaActual.get(Calendar.HOUR_OF_DAY);
+                    if (horaSeleccionada > horaActual && !horasReservadas.contains(hora)) {
+                        RadioButton radioButton = new RadioButton(ReservarActivityAdmin.this);
+                        radioButton.setText(hora);
+                        radioGroupHoras.addView(radioButton);
+                        alMenosUnaHoraDisponible = true;
+                    }
+                } else {
+                    if (!horasReservadas.contains(hora)) {
+                        RadioButton radioButton = new RadioButton(ReservarActivityAdmin.this);
+                        radioButton.setText(hora);
+                        radioGroupHoras.addView(radioButton);
+                        alMenosUnaHoraDisponible = true;
                     }
                 }
             }
+
+            if (!alMenosUnaHoraDisponible) {
+                mostrarMensajeNoDisponibles();
+                return;
+            }
         }
 
+        // Si se han agregado botones de radio, mostrar las horas disponibles y ocultar los elementos relacionados con la selección de servicios, fechas y usuarios
         findViewById(R.id.cvCalendario).setVisibility(View.GONE);
         findViewById(R.id.textViewServicio).setVisibility(View.GONE);
         findViewById(R.id.spinnerServicios).setVisibility(View.GONE);
         findViewById(R.id.cvHora).setVisibility(View.VISIBLE);
+        findViewById(R.id.textViewUsuario).setVisibility(View.GONE);
+        findViewById(R.id.spinnerUsuarios).setVisibility(View.GONE);
     }
 
+    // Método para mostrar un mensaje de que no hay horas disponibles para la fecha seleccionada
     private void mostrarMensajeNoDisponibles() {
         mostrarToast(getString(R.string.no_reservas_disponibles));
     }
@@ -417,6 +455,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         activity.finish();
     }
 
+    // Método para crear el canal de notificación
     private void crearCanalNotificacion() {
         CharSequence nombreCanal = "Reservas";
         int importancia = NotificationManager.IMPORTANCE_DEFAULT;
@@ -426,6 +465,7 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         mostrarNotificacionReserva();
     }
 
+    // Método para mostrar la notificación de reserva
     @SuppressLint("MissingPermission")
     private void mostrarNotificacionReserva() {
         // Construir notificación
@@ -445,87 +485,6 @@ public class ReservarActivity extends AppCompatActivity implements View.OnClickL
         // Mostrar la notificación
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
         notificationManagerCompat.notify(1, builder.build());
-    }
-
-    // Método para agregar la cita al calendario de Google
-    private void agregarEventoCalendario() {
-        if (fechaHoraInicio != null) {
-            Calendar fechaHoraFin = (Calendar) fechaHoraInicio.clone();
-            fechaHoraFin.add(Calendar.HOUR_OF_DAY, 1); // La cita finalizará por defecto 1 hora después de la hora de inicio
-
-            DecimalFormat decimalFormat = new DecimalFormat("0.00€");
-            String precioFormateado = decimalFormat.format(precioDeServicio);
-
-            String descripcionEvento = getString(R.string.calendar_description);
-            if (!servicioSeleccionado.isEmpty()) {
-                descripcionEvento += "\n" + getString(R.string.servicio) + " " + servicioSeleccionado + "\n" + getString(R.string.precio) + " " + precioFormateado;
-            }
-            if (!anotaciones.isEmpty()) {
-                descripcionEvento += "\n" + getString(R.string.anotaciones) + " " + anotaciones;
-            }
-
-            Intent intent = new Intent(Intent.ACTION_EDIT)
-                    .setType("vnd.android.cursor.item/event")
-                    .putExtra(CalendarContract.Events.TITLE, getString(R.string.calendar_title))
-                    .putExtra(CalendarContract.Events.DESCRIPTION, descripcionEvento)
-                    .putExtra(CalendarContract.Events.EVENT_LOCATION, getString(R.string.calendar_location))
-                    .putExtra(CalendarContract.Events.ALL_DAY, false)
-                    .putExtra(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().getID())
-                    .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, fechaHoraInicio.getTimeInMillis())
-                    .putExtra(CalendarContract.EXTRA_EVENT_END_TIME, fechaHoraFin.getTimeInMillis());
-
-            startActivity(intent);
-
-        } else {
-            mostrarToast(getString(R.string.seleccione_fecha_hora));
-        }
-    }
-
-    private void configurarAlarmas(Calendar fechaHoraInicio) {
-        // Obtener una instancia del AlarmManager
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-
-        // Obtener el calendario actual
-        Calendar calendarioActual = Calendar.getInstance();
-
-        // Configurar la alarma para un día antes de la cita solo si la cita no es para el día actual
-        if (!esMismoDia(calendarioActual, fechaHoraInicio)) {
-            Calendar horaAlarmaDiaAntes = (Calendar) fechaHoraInicio.clone();
-            horaAlarmaDiaAntes.add(Calendar.DAY_OF_MONTH, -1);
-
-            // Crear un intent para la clase BroadcastReceiver que manejará la alarma del día anterior
-            Intent intentDiaAntes = new Intent(this, AlarmReceiver.class);
-            intentDiaAntes.putExtra("mensaje", getString(R.string.dia_alarma));
-            intentDiaAntes.putExtra("canal", CHANNEL_ID);
-
-            // Crear un PendingIntent para la alarma del día anterior
-            PendingIntent pendingIntentDiaAntes = PendingIntent.getBroadcast(this, 0, intentDiaAntes, PendingIntent.FLAG_IMMUTABLE);
-
-            // Configurar la alarma del día anterior con el tiempo calculado
-            alarmManager.set(AlarmManager.RTC_WAKEUP, horaAlarmaDiaAntes.getTimeInMillis(), pendingIntentDiaAntes);
-        }
-
-        // Configurar la alarma para una hora antes de la cita
-        Calendar horaAlarmaHoraAntes = (Calendar) fechaHoraInicio.clone();
-        horaAlarmaHoraAntes.add(Calendar.HOUR_OF_DAY, -1);
-
-        // Crear un intent para la clase BroadcastReceiver que manejará la alarma de una hora antes
-        Intent intentHoraAntes = new Intent(this, AlarmReceiver.class);
-        intentHoraAntes.putExtra("mensaje", getString(R.string.hora_alarma) + servicioSeleccionado);
-        intentHoraAntes.putExtra("canal", CHANNEL_ID);
-
-        // Crear un PendingIntent para la alarma de una hora antes
-        PendingIntent pendingIntentHoraAntes = PendingIntent.getBroadcast(this, 1, intentHoraAntes, PendingIntent.FLAG_IMMUTABLE);
-
-        // Configurar la alarma de una hora antes con el tiempo calculado
-        alarmManager.set(AlarmManager.RTC_WAKEUP, horaAlarmaHoraAntes.getTimeInMillis(), pendingIntentHoraAntes);
-    }
-
-    // Método para verificar si dos fechas están en el mismo día
-    private boolean esMismoDia(Calendar calendario1, Calendar calendario2) {
-        return calendario1.get(Calendar.YEAR) == calendario2.get(Calendar.YEAR) &&
-                calendario1.get(Calendar.MONTH) == calendario2.get(Calendar.MONTH) &&
-                calendario1.get(Calendar.DAY_OF_MONTH) == calendario2.get(Calendar.DAY_OF_MONTH);
     }
 
     private void mostrarToast(String text) {

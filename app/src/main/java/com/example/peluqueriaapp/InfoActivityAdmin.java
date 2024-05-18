@@ -31,12 +31,12 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InfoActivity extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback {
+public class InfoActivityAdmin extends AppCompatActivity implements View.OnClickListener, OnMapReadyCallback {
 
     DrawerLayout drawerLayout;
     ImageView menu;
     TextView titulo;
-    LinearLayout home, citas, info, qr, logout;
+    LinearLayout home, citas, info, qr, admin, user, logout;
     String usuarioActivo = "";
     double latitud = 36.683453637083545;
     double longitud = -4.5371127822408175;
@@ -57,7 +57,7 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_info);
+        setContentView(R.layout.activity_info_admin);
         // Inicializar el controlador de la interfaz
         handler = new Handler();
 
@@ -86,6 +86,8 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
         citas = findViewById(R.id.citas);
         info = findViewById(R.id.info);
         qr = findViewById(R.id.qr);
+        admin = findViewById(R.id.add_admin);
+        user = findViewById(R.id.add_user);
         logout = findViewById(R.id.logout);
 
         viewPagerPeluqueria = findViewById(R.id.viewPagerPeluqueria);
@@ -111,7 +113,10 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
         citas.setOnClickListener(this);
         info.setOnClickListener(this);
         qr.setOnClickListener(this);
+        admin.setOnClickListener(this);
+        user.setOnClickListener(this);
         logout.setOnClickListener(this);
+
         buttonAbrirMapa.setOnClickListener(this);
         buttonEquipo.setOnClickListener(this);
         imageEquipo.setOnClickListener(this);
@@ -125,31 +130,17 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId() == R.id.menu) {
             openDrawer(drawerLayout);
         } else if (v.getId() == R.id.home) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, ReservarActivity.class);
-                } else {
-                    redirectActivity(this, ReservarActivityClient.class);
-                }
-            });
+            redirectActivity(this, ReservarActivityAdmin.class);
         } else if (v.getId() == R.id.citas) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, ConsultarActivity.class, usuarioActivo);
-                } else {
-                    redirectActivity(this, ConsultarActivityClient.class, usuarioActivo);
-                }
-            });
+            redirectActivity(this, ConsultarActivityAdmin.class, usuarioActivo);
         } else if (v.getId() == R.id.info) {
             recreate();
         } else if (v.getId() == R.id.qr) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, QrActivity.class, usuarioActivo);
-                } else {
-                    redirectActivity(this, QrActivityClient.class, usuarioActivo);
-                }
-            });
+            redirectActivity(this, QrActivityAdmin.class, usuarioActivo);
+        } else if (v.getId() == R.id.add_admin) {
+            redirectActivity(this, AddAdminActivity.class, usuarioActivo);
+        }  else if (v.getId() == R.id.add_user) {
+            redirectActivity(this, AddUserActivity.class, usuarioActivo);
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();

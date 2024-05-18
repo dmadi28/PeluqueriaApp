@@ -5,7 +5,7 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ConsultarActivity">
+    tools:context=".ConsultarActivityClient">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_tiene_citas_disponibles"
-            android:textColor="@color/black"
+            android:textColor="@color/red"
             android:textStyle="bold"
             android:textSize="16sp"
             android:layout_gravity="center"
@@ -34,7 +34,6 @@
             android:layout_height="wrap_content"
             android:text="@string/pulse_anular_cita"
             android:textColor="@color/red"
-            android:textStyle="bold"
             android:textSize="16sp"
             android:layout_gravity="center_horizontal"
             android:layout_margin="16dp"/>
@@ -64,7 +63,7 @@
         android:background="@color/white"
         android:layout_gravity="start">
 
-        <include layout="@layout/nav_drawer"/>
+        <include layout="@layout/nav_drawer_client"/>
     </RelativeLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

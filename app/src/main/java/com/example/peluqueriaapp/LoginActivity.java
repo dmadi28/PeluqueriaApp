@@ -195,19 +195,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
             if (isAdmin) {
-                Intent intent = new Intent(LoginActivity.this, ReservarActivity.class);
+                Intent intent = new Intent(LoginActivity.this, ReservarActivityAdmin.class);
                 startActivity(intent);
-                finish();
             } else {
                 Intent intent = new Intent(LoginActivity.this, ReservarActivityClient.class);
                 startActivity(intent);
-                finish();
             }
+            finish();
         });
-        Intent intent = new Intent(LoginActivity.this, ReservarActivityClient.class);
-        startActivity(intent);
-        finish();
     }
+
 
     private void mostrarToast(String mensaje) {
         Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();

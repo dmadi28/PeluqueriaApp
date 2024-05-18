@@ -38,22 +38,25 @@
             android:name=".RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".ReservarActivity"
+            android:name=".ReservarActivityAdmin"
             android:exported="false" />
         <activity
             android:name=".ReservarActivityClient"
             android:exported="false" />
         <activity
-            android:name=".ConsultarActivity"
+            android:name=".ConsultarActivityAdmin"
             android:exported="false" />
         <activity
             android:name=".ConsultarActivityClient"
             android:exported="false" />
         <activity
-            android:name=".InfoActivity"
+            android:name=".InfoActivityAdmin"
             android:exported="false" />
         <activity
-            android:name=".QrActivity"
+            android:name=".InfoActivityClient"
+            android:exported="false" />
+        <activity
+            android:name=".QrActivityAdmin"
             android:exported="false" />
         <activity
             android:name=".QrActivityClient"
@@ -61,6 +64,12 @@
         <activity
             android:name=".GenerarQrActivity"
             android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".AddAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AddUserActivity"
             android:exported="false" />
         <receiver android:name=".AlarmReceiver" />
     </application>

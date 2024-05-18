@@ -27,7 +27,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import java.util.List;
 
-public class ConsultarActivity extends AppCompatActivity implements View.OnClickListener {
+public class ConsultarActivityClient extends AppCompatActivity implements View.OnClickListener {
 
     DrawerLayout drawerLayout;
     ImageView menu;
@@ -49,7 +49,7 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_consultar);
+        setContentView(R.layout.activity_consultar_client);
 
         firebaseManager = new FirebaseManager();
         mGoogleSignInClient = GoogleSignIn.getClient(this, GoogleSignInOptions.DEFAULT_SIGN_IN);
@@ -83,10 +83,11 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
 
         lvCitas = findViewById(R.id.lvCitas);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        startAutoRefresh();
     }
 
     private void updateTitle() {
-        titulo.setText(R.string.consultar_todas_las_citas);
+        titulo.setText(getString(R.string.consultar_citas_de) + usuarioActivo);
     }
 
     private void setupOnClickListeners() {
@@ -103,25 +104,13 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
         if (v.getId() == R.id.menu) {
             openDrawer(drawerLayout);
         } else if (v.getId() == R.id.home) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, ReservarActivity.class);
-                } else {
-                    redirectActivity(this, ReservarActivityClient.class);
-                }
-            });
+            redirectActivity(this, ReservarActivityClient.class);
         } else if (v.getId() == R.id.citas) {
             recreate();
         } else if (v.getId() == R.id.info) {
-            redirectActivity(this, InfoActivity.class, usuarioActivo);
+            redirectActivity(this, InfoActivityClient.class, usuarioActivo);
         }  else if (v.getId() == R.id.qr) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, QrActivity.class, usuarioActivo);
-                } else {
-                    redirectActivity(this, QrActivityClient.class, usuarioActivo);
-                }
-            });
+            redirectActivity(this, QrActivityClient.class, usuarioActivo);
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
@@ -167,10 +156,10 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void showConfirmationDialog(Cita cita) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ConsultarActivity.this);
-        builder.setTitle(R.string.anular_cita);
-        builder.setMessage(R.string.desea_anular_cita);
-        builder.setPositiveButton(R.string.si, new DialogInterface.OnClickListener() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ConsultarActivityClient.this);
+        builder.setTitle(getString(R.string.anular_cita));
+        builder.setMessage(getString(R.string.desea_anular_cita));
+        builder.setPositiveButton(getString(R.string.si), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Llamar al método del FirebaseManager para eliminar la cita
@@ -196,8 +185,6 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void crearAdaptador() {
-        startAutoRefresh();
-
         firebaseManager.obtenerCitasPorUsuario(usuarioActivo, new FirebaseManager.CitasCallback() {
             @Override
             public void onCitasObtenidas(List<Cita> citasList) {
@@ -215,7 +202,7 @@ public class ConsultarActivity extends AppCompatActivity implements View.OnClick
                     textViewAnularCita.setVisibility(View.VISIBLE);
 
                     // Configurar el adaptador con la lista de citas
-                    AdaptadorCitas adapter = new AdaptadorCitas(ConsultarActivity.this, citasList);
+                    AdaptadorCitas adapter = new AdaptadorCitas(ConsultarActivityClient.this, citasList);
                     lvCitas.setAdapter(adapter);
                 }
             }

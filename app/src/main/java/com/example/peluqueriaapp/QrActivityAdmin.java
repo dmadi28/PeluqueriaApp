@@ -29,12 +29,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class QrActivity extends AppCompatActivity implements View.OnClickListener {
+public class QrActivityAdmin extends AppCompatActivity implements View.OnClickListener {
 
     DrawerLayout drawerLayout;
     ImageView menu;
     TextView titulo;
-    LinearLayout home, citas, info, qr, logout;
+    LinearLayout home, citas, info, qr, admin, user, logout;
     String usuarioActivo = "";
     ImageButton buttonGenerar, buttonEscanear;
     FirebaseManager firebaseManager;
@@ -45,7 +45,7 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_qr);
+        setContentView(R.layout.activity_qr_admin);
 
         usuarioActivo = getIntent().getStringExtra("usuarioActivo");
 
@@ -69,6 +69,8 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
         citas = findViewById(R.id.citas);
         info = findViewById(R.id.info);
         qr = findViewById(R.id.qr);
+        admin = findViewById(R.id.add_admin);
+        user = findViewById(R.id.add_user);
         logout = findViewById(R.id.logout);
 
         buttonGenerar = findViewById(R.id.btnGenerarQR);
@@ -85,6 +87,8 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
         citas.setOnClickListener(this);
         info.setOnClickListener(this);
         qr.setOnClickListener(this);
+        admin.setOnClickListener(this);
+        user.setOnClickListener(this);
         logout.setOnClickListener(this);
 
         buttonGenerar.setOnClickListener(this);
@@ -96,36 +100,28 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
         if (v.getId() == R.id.menu) {
             openDrawer(drawerLayout);
         } else if (v.getId() == R.id.home) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, ReservarActivity.class);
-                } else {
-                    redirectActivity(this, ReservarActivityClient.class);
-                }
-            });
+            redirectActivity(this, ReservarActivityAdmin.class);
         } else if (v.getId() == R.id.citas) {
-            firebaseManager.checkAdminUser(firebaseManager.getCurrentUserEmail(), isAdmin -> {
-                if (isAdmin) {
-                    redirectActivity(this, ConsultarActivity.class, usuarioActivo);
-                } else {
-                    redirectActivity(this, ConsultarActivityClient.class, usuarioActivo);
-                }
-            });
+            redirectActivity(this, ConsultarActivityAdmin.class, usuarioActivo);
         } else if (v.getId() == R.id.info) {
-            redirectActivity(this, InfoActivity.class, usuarioActivo);
+            redirectActivity(this, InfoActivityAdmin.class, usuarioActivo);
         } else if (v.getId() == R.id.qr) {
             recreate();
-        } else if (v.getId() == R.id.btnGenerarQR) {
-            // Redirige a la actividad para generar códigos
-            redirectActivity(this, GenerarQrActivity.class, usuarioActivo);
-        } else if (v.getId() == R.id.btnEscanearQR) {
-            abrirScanner();
+        } else if (v.getId() == R.id.add_admin) {
+            redirectActivity(this, AddAdminActivity.class, usuarioActivo);
+        } else if (v.getId() == R.id.add_user) {
+            redirectActivity(this, AddUserActivity.class, usuarioActivo);
         } else if (v.getId() == R.id.logout) {
             firebaseManager.signOut();
             mGoogleSignInClient.signOut();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
+        } else if (v.getId() == R.id.btnGenerarQR) {
+            // Redirige a la actividad para generar códigos
+            redirectActivity(this, GenerarQrActivity.class, usuarioActivo);
+        } else if (v.getId() == R.id.btnEscanearQR) {
+            abrirScanner();
         }
     }
 
@@ -154,27 +150,27 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
     }
 
     private void comprobarCodigoQR(String codigoQR) {
-        // Extraer porcentaje y fecha de expiración
-        String porcentaje = extraerPorcentaje(codigoQR);
-        String fechaExpiracion = extraerFechaExpiracion(codigoQR);
+        // Extraer el ID único del código QR
+        String idUnico = extraerIdUnico(codigoQR);
 
         // Verificar la existencia del código QR en Firebase
-        firebaseManager.comprobarExistenciaCodigoQR(porcentaje, fechaExpiracion, new FirebaseManager.OnCodigoQRComprobadoListener() {
+        firebaseManager.comprobarExistenciaCodigoQR(idUnico, new FirebaseManager.OnCodigoQRComprobadoListener() {
             @Override
             public void onCodigoQRComprobado(boolean existe) {
                 if (existe) {
                     // Si el código QR ya existe en Firebase
+                    String fechaExpiracion = extraerFechaExpiracion(codigoQR);
                     if (!isFechaExpirada(fechaExpiracion)) {
                         // Si la fecha de expiración no ha pasado todavía
                         mostrarToast(getString(R.string.codigo_valido));
                         mostrarInformacionQR(codigoQR);
                         // Eliminar el documento correspondiente al código QR válido
-                        firebaseManager.eliminarCodigoQR(porcentaje, fechaExpiracion);
+                        firebaseManager.eliminarCodigoQR(idUnico);
                     } else {
                         // Si la fecha de expiración ya ha pasado
                         mostrarToast(getString(R.string.codigo_caducado));
                         // Eliminar el documento correspondiente al código QR inválido
-                        firebaseManager.eliminarCodigoQR(porcentaje, fechaExpiracion);
+                        firebaseManager.eliminarCodigoQR(idUnico);
                     }
                 } else {
                     // Si el código QR no existe en Firebase
@@ -182,6 +178,16 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
                 }
             }
         });
+    }
+
+    // Método para extraer el ID único del código QR
+    private String extraerIdUnico(String codigoQR) {
+        String idLabel = "ID: ";
+        int inicio = codigoQR.indexOf(idLabel) + idLabel.length();
+        if (inicio >= 0) {
+            return codigoQR.substring(inicio).trim();
+        }
+        return null;
     }
 
     // Método para verificar si la fecha de expiración ha pasado
@@ -197,11 +203,15 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
         return true;
     }
 
+    // Método para mostrar la información del código QR
     private void mostrarInformacionQR(String codigoQR) {
-        // Crear y mostrar un AlertDialog con la información del código QR
+        // Eliminar la tercera línea (la línea del ID)
+        String textoQRSinId = codigoQR.substring(0, codigoQR.lastIndexOf("\n"));
+
+        // Crear y mostrar un AlertDialog con la información filtrada del código QR
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.codigo_activo);
-        builder.setMessage(codigoQR);
+        builder.setMessage(textoQRSinId);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -209,6 +219,19 @@ public class QrActivity extends AppCompatActivity implements View.OnClickListene
             }
         });
         builder.show();
+    }
+
+    // Método para eliminar el ID del texto de información del código QR
+    private String quitarID(String codigoQR) {
+        // Buscar la posición del primer salto de línea (indicando el final del ID)
+        int indiceSaltoLinea = codigoQR.indexOf("\n");
+        if (indiceSaltoLinea != -1) {
+            // Extraer el contenido después del primer salto de línea (eliminando el ID)
+            return codigoQR.substring(indiceSaltoLinea + 1);
+        } else {
+            // Si no se encuentra un salto de línea, devolver el código QR sin cambios
+            return codigoQR;
+        }
     }
 
     private void mostrarToast(String mensaje) {

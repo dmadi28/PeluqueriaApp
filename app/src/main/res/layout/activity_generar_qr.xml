@@ -9,115 +9,136 @@
     tools:context=".GenerarQrActivity">
 
     <!-- Contenedor principal -->
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <!-- Barra de herramientas -->
-        <include layout="@layout/toolbar"/>
-
-        <!-- Contenedor para los elementos centrados -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:layout_marginTop="50dp">
+            android:orientation="vertical">
 
-            <!-- LinearLayout para el porcentaje de descuento -->
+            <!-- Barra de herramientas -->
+            <include layout="@layout/toolbar"/>
+
+            <!-- Contenedor para los elementos centrados -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="20dp">
+                android:orientation="vertical"
+                android:gravity="center">
 
-                <!-- TextView para indicar el porcentaje de descuento -->
+                <!-- Título -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/porcentaje_de_descuento"
-                    android:textSize="18sp"
-                    android:textColor="@android:color/black"
-                    android:layout_marginEnd="8dp"/>
+                    android:text="@string/generar_descuento"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:paddingTop="30dp"/>
 
-                <!-- Spinner para seleccionar el porcentaje -->
-                <Spinner
-                    android:id="@+id/spinnerPorcentaje"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="20dp"
-                android:layout_marginStart="20dp">
-
-                <!-- TextView para indicar la duración del descuento -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/duracion_del_descuento"
-                    android:textSize="18sp"
-                    android:textColor="@android:color/black"
-                    android:layout_marginEnd="8dp"/>
-
-                <!-- Spinner para seleccionar la duración -->
-                <Spinner
-                    android:id="@+id/spinnerDuracion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
-
-            <!-- Botón para generar el QR -->
-            <Button
-                android:id="@+id/btnGenerarQR"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/generar_qr"
-                android:drawableStart="@drawable/ic_qr"
-                android:drawablePadding="8dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"/>
-
-            <!-- CardView para mostrar el QR -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardViewQR"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:cardCornerRadius="8dp">
-
+                <!-- Imagen de descuento -->
                 <ImageView
-                    android:id="@+id/imageQR"
+                    android:id="@+id/imageViewDiscount"
+                    android:layout_width="365dp"
+                    android:layout_height="182dp"
+                    android:src="@drawable/descuento" />
+
+                <!-- LinearLayout para el porcentaje de descuento -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="20dp">
+
+                    <!-- TextView para indicar el porcentaje de descuento -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/porcentaje_de_descuento"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="8dp"
+                        style="@style/CustomTextViewStyle"/>
+
+                    <!-- Spinner para seleccionar el porcentaje -->
+                    <Spinner
+                        android:id="@+id/spinnerPorcentaje"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <!-- LinearLayout para la duración del descuento -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="20dp">
+
+                    <!-- TextView para indicar la duración del descuento -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/duracion_del_descuento"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="8dp"
+                        style="@style/CustomTextViewStyle"/>
+
+                    <!-- Spinner para seleccionar la duración -->
+                    <Spinner
+                        android:id="@+id/spinnerDuracion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <!-- Botón para generar el QR -->
+                <Button
+                    android:id="@+id/btnGenerarQR"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:scaleType="center"
-                    android:adjustViewBounds="true"/>
+                    android:text="@string/generar_qr"
+                    android:drawableStart="@drawable/ic_qr"
+                    android:drawablePadding="8dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    style="@style/CustomButtonStyle"/>
 
-            </androidx.cardview.widget.CardView>
+                <!-- CardView para mostrar el QR -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardViewQR"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:cardCornerRadius="8dp">
+
+                    <ImageView
+                        android:id="@+id/imageQR"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:scaleType="center"
+                        android:adjustViewBounds="true"/>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Icono de compartir -->
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabCompartirQR"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_margin="16dp"
+                    android:src="@drawable/ic_share"
+                    android:visibility="gone" />
+
+            </LinearLayout>
 
         </LinearLayout>
-
-        <!-- Icono de compartir -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabCompartirQR"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:src="@drawable/ic_share"
-            android:visibility="gone" />
-
-    </LinearLayout>
+    </ScrollView>
 
     <!-- Panel lateral -->
     <RelativeLayout
@@ -126,7 +147,7 @@
         android:background="@color/white"
         android:layout_gravity="start">
 
-        <include layout="@layout/nav_drawer"/>
+        <include layout="@layout/nav_drawer_admin"/>
 
     </RelativeLayout>
 

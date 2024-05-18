@@ -4,7 +4,7 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".QrActivity">
+    tools:context=".QrActivityAdmin">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -41,7 +41,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/generar_codigo"
                         android:textSize="18sp"
-                        android:textColor="@android:color/black"
+                        android:textColor="?android:textColorPrimary"
                         android:layout_gravity="center_horizontal"/>
 
                 </LinearLayout>
@@ -65,7 +65,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/escanear_codigo"
                         android:textSize="18sp"
-                        android:textColor="@android:color/black"
+                        android:textColor="?android:textColorPrimary"
                         android:layout_gravity="center_horizontal"/>
 
                 </LinearLayout>
@@ -81,7 +81,7 @@
         android:background="@color/white"
         android:layout_gravity="start">
 
-        <include layout="@layout/nav_drawer"/>
+        <include layout="@layout/nav_drawer_admin"/>
     </RelativeLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

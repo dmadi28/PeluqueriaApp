@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/drawer_border"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="176dp"
+                android:orientation="vertical"
+                android:gravity="bottom">
+
+                <ImageView
+                    android:layout_width="423dp"
+                    android:layout_height="199dp"
+                    android:layout_gravity="center"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icon" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reservar_citas"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:drawablePadding="8dp"
+                    app:drawableLeftCompat="@drawable/ic_home" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/citas"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/consultar_citas"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:drawablePadding="8dp"
+                    app:drawableLeftCompat="@drawable/ic_list" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/info_de_contacto"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:drawablePadding="8dp"
+                    app:drawableLeftCompat="@drawable/ic_info" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/qr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/descuentos"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:drawablePadding="8dp"
+                    app:drawableLeftCompat="@drawable/ic_scanner" />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/lavender"/>
+
+            <LinearLayout
+                android:id="@+id/add_admin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/register_as_admin"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:drawablePadding="8dp"
+                    app:drawableLeftCompat="@drawable/ic_admin" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/add_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/register_as_user"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:drawablePadding="8dp"
+                    app:drawableLeftCompat="@drawable/ic_admin" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/logout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/log_out"
+                    android:textColor="@color/red"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:drawablePadding="8dp"
+                    app:drawableLeftCompat="@drawable/ic_exit" />
+
+            </LinearLayout>
+
+            <!-- Designed By -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="200dp"
+                android:text="@string/disenado_por"
+                android:textSize="16sp"
+                android:textStyle="italic"
+                style="@style/CustomTextViewStyle"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>
