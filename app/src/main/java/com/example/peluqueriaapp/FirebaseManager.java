@@ -424,6 +424,28 @@ public class FirebaseManager {
                 });
     }
 
+    public void obtenerCitasDesdeFecha(String fecha, CitasCallback callback) {
+        CollectionReference citasRef = db.collection("citas");
+
+        citasRef.whereGreaterThanOrEqualTo("fecha", fecha)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<Cita> citasList = new ArrayList<>();
+                            for (DocumentSnapshot document : task.getResult()) {
+                                Cita cita = document.toObject(Cita.class);
+                                citasList.add(cita);
+                            }
+                            callback.onCitasObtenidas(citasList);
+                        } else {
+                            callback.onError(task.getException().getMessage());
+                        }
+                    }
+                });
+    }
+
     // Método para obtener todas las citas de la base de datos
     public void obtenerTodasLasCitas(CitasCallback callback) {
         CollectionReference citasRef = db.collection("citas");

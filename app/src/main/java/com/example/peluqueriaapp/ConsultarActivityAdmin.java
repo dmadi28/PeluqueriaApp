@@ -2,15 +2,16 @@ package com.example.peluqueriaapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -29,7 +30,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ConsultarActivityAdmin extends AppCompatActivity implements View.OnClickListener {
@@ -42,8 +46,8 @@ public class ConsultarActivityAdmin extends AppCompatActivity implements View.On
     SwipeRefreshLayout swipeRefreshLayout;
     String usuarioActivo = "";
     Spinner spinnerUsuarios;
-    Button buttonBuscar, buttonVolver;
-    TextView textViewNoCitas;
+    Button buttonBuscar, buttonFiltrarFecha, buttonVolver;
+    TextView textViewNoCitas, textViewEligeUsuarios;
     FirebaseManager firebaseManager;
     GoogleSignInClient mGoogleSignInClient;
     long pressedTime;
@@ -112,8 +116,10 @@ public class ConsultarActivityAdmin extends AppCompatActivity implements View.On
         logout = findViewById(R.id.logout);
 
         textViewNoCitas = findViewById(R.id.textViewNoCitas);
+        textViewEligeUsuarios = findViewById(R.id.textViewEligeUsuario);
         spinnerUsuarios = findViewById(R.id.spinnerUsuarios);
         buttonBuscar = findViewById(R.id.btnBuscar);
+        buttonFiltrarFecha = findViewById(R.id.btnFiltrarFecha);
         buttonVolver = findViewById(R.id.btnVolver);
         lvCitas = findViewById(R.id.lvCitas);
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
@@ -134,6 +140,7 @@ public class ConsultarActivityAdmin extends AppCompatActivity implements View.On
         logout.setOnClickListener(this);
 
         buttonBuscar.setOnClickListener(this);
+        buttonFiltrarFecha.setOnClickListener(this);
         buttonVolver.setOnClickListener(this);
     }
 
@@ -181,14 +188,76 @@ public class ConsultarActivityAdmin extends AppCompatActivity implements View.On
             startActivity(intent);
             finish();
         } else if (v.getId() == R.id.btnBuscar) {
-            filtrarCitas();
+            filtrarCitasUsuario();
             // Mostrar el botón de volver
             buttonVolver.setVisibility(View.VISIBLE);
+            // No mostrar el botón de filtrar
+            buttonFiltrarFecha.setVisibility(View.GONE);
+        } else if (v.getId() == R.id.btnFiltrarFecha) {
+            mostrarDatePickerDialog();
+            buttonBuscar.setVisibility(View.GONE);
+            buttonVolver.setVisibility(View.VISIBLE);
+            textViewEligeUsuarios.setVisibility(View.GONE);
+            spinnerUsuarios.setVisibility(View.GONE);
         } else if (v.getId() == R.id.btnVolver) {
-            buttonVolver.setVisibility(View.GONE);
             // Volver a cargar todas las citas
             cargarTodasLasCitas();
+            buttonBuscar.setVisibility(View.VISIBLE);
+            buttonFiltrarFecha.setVisibility(View.VISIBLE);
+            buttonVolver.setVisibility(View.GONE);
+            textViewEligeUsuarios.setVisibility(View.VISIBLE);
+            spinnerUsuarios.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void mostrarDatePickerDialog() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                ConsultarActivityAdmin.this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        Calendar selectedDate = Calendar.getInstance();
+                        selectedDate.set(year, month, dayOfMonth);
+                        filtrarCitasPorFecha(selectedDate.getTime());
+                    }
+                },
+                year, month, day
+        );
+
+        // Establecer la fecha mínima en el DatePicker a la fecha actual
+        datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+        datePickerDialog.show();
+    }
+
+    private void filtrarCitasPorFecha(Date fecha) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String fechaString = sdf.format(fecha);
+
+        firebaseManager.obtenerCitasDesdeFecha(fechaString, new FirebaseManager.CitasCallback() {
+            @Override
+            public void onCitasObtenidas(List<Cita> citasList) {
+                isFiltered = true;
+                citasFiltradas = citasList;
+                AdaptadorCitas adapter = new AdaptadorCitas(ConsultarActivityAdmin.this, citasList);
+                lvCitas.setAdapter(adapter);
+
+                if (citasList.isEmpty()) {
+                    textViewNoCitas.setVisibility(View.VISIBLE);
+                } else {
+                    textViewNoCitas.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.e("ConsultarActivityAdmin", "Error al obtener citas por fecha: " + errorMessage);
+            }
+        });
     }
 
     private void setupListViewClickListener() {
@@ -229,7 +298,11 @@ public class ConsultarActivityAdmin extends AppCompatActivity implements View.On
     private void showConfirmationDialog(Cita cita) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ConsultarActivityAdmin.this);
         builder.setTitle(R.string.anular_cita);
-        builder.setMessage(R.string.desea_anular_cita);
+
+        // Agregar el nombre del usuario al mensaje del diálogo de confirmación
+        String mensaje = getString(R.string.desea_anular_cita) + " " + cita.getUsuario();
+        builder.setMessage(mensaje);
+
         builder.setPositiveButton(R.string.si, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -322,7 +395,8 @@ public class ConsultarActivityAdmin extends AppCompatActivity implements View.On
         });
     }
 
-    private void filtrarCitas() {
+    // Método para filtrar citas por usuario
+    private void filtrarCitasUsuario() {
         // Obtener el usuario seleccionado del Spinner
         Usuario usuarioSeleccionado = (Usuario) spinnerUsuarios.getSelectedItem();
         String usuarioEmail = usuarioSeleccionado.getEmail();

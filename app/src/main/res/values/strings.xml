@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lucía García</string>
+    <string name="app_name">Lucía García BeautyBoard</string>
     <string name="default_web_client_id">701396161148-mfd6idsjg4r8v6rcfen4tftai23gmlri.apps.googleusercontent.com</string>
     <string-array name="horas_disponibles">
         <item>10:00</item>
@@ -67,7 +67,8 @@
     <!-- XML Consultar Citas -->
     <string name="no_tiene_citas_disponibles">No tiene citas disponibles</string>
     <string name="pulse_anular_cita">Pulse en una cita si desea anularla</string>
-    <string name="buscar">Buscar</string>
+    <string name="buscar">Buscar por usuario</string>
+    <string name="filtrar_fecha">Buscar por fecha</string>
     <string name="volver">Volver a ver todas las citas</string>
     <string name="servicio">Servicio:</string>
     <string name="precio">Precio:</string>
@@ -141,7 +142,8 @@
     <string name="consultar_todas_las_citas">Consultar todas las citas</string>
     <string name="error_al_buscar_la_cita">Error al buscar la cita</string>
     <string name="anular_cita">Anular Cita</string>
-    <string name="desea_anular_cita">¿Desea anular esta cita?</string>
+    <string name="desea_anular_citaClient">¿Desea anular esta cita?</string>
+    <string name="desea_anular_cita">¿Desea anular esta cita? \n\nUsuario: </string>
     <string name="si">Sí</string>
     <string name="cita_anulada_exitosamente">Cita anulada exitosamente</string>
     <string name="error_al_anular_la_cita">Error al anular la cita</string>

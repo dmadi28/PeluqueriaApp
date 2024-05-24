@@ -1,6 +1,8 @@
 package com.example.peluqueriaapp;
 
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +33,9 @@ public class RegisterActivity extends AppCompatActivity {
         spinnerGenero = findViewById(R.id.spinnerGeneroR);
         buttonRegister = findViewById(R.id.buttonRegisterR);
 
+        // Llamar al método para filtrar solo letras en el EditText de nombre
+        filtrarNombre();
+
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,6 +51,24 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    // Método para filtrar solo letras en el EditText de nombre
+    private void filtrarNombre() {
+        InputFilter lettersAndSpacesFilter = new InputFilter() {
+            @Override
+            public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+                for (int i = start; i < end; i++) {
+                    char character = source.charAt(i);
+                    if (!Character.isLetter(character) && !Character.isSpaceChar(character)) {
+                        return "";
+                    }
+                }
+                return null;
+            }
+        };
+
+        editTextNombre.setFilters(new InputFilter[]{lettersAndSpacesFilter});
     }
 
     // Método para validar todos los campos

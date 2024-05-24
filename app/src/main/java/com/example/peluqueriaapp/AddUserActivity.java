@@ -163,6 +163,8 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
                 @Override
                 public void onSuccess() {
                     mostrarToast(getString(R.string.administrador_a_usuario));
+                    // Recargar el Spinner para que el admin convertido no se muestre
+                    setupSpinnerAdministradores();
                 }
 
                 @Override

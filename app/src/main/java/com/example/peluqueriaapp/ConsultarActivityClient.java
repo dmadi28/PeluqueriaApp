@@ -158,7 +158,7 @@ public class ConsultarActivityClient extends AppCompatActivity implements View.O
     private void showConfirmationDialog(Cita cita) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ConsultarActivityClient.this);
         builder.setTitle(getString(R.string.anular_cita));
-        builder.setMessage(getString(R.string.desea_anular_cita));
+        builder.setMessage(getString(R.string.desea_anular_citaClient));
         builder.setPositiveButton(getString(R.string.si), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

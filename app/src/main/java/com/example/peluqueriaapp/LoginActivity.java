@@ -70,7 +70,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         textViewForgotPassword.setOnClickListener(this);
     }
 
-
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.buttonLoginL) {
@@ -115,7 +114,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        
+
         signInWithGoogle();
     }
 
@@ -133,6 +132,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         EditText editTextConfirmEmail = view.findViewById(R.id.editTextEmail);
         Button buttonResetPassword = view.findViewById(R.id.buttonResetPassword);
+
+        // Obtener el texto del editTextEmailL si no está vacío y establecerlo en editTextConfirmEmail
+        String email = textInputEditTextEmail.getText().toString();
+        if (!email.isEmpty()) {
+            editTextConfirmEmail.setText(email);
+        }
 
         AlertDialog dialog = builder.create();
         buttonResetPassword.setOnClickListener(new View.OnClickListener() {
@@ -204,7 +209,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             finish();
         });
     }
-
 
     private void mostrarToast(String mensaje) {
         Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show();

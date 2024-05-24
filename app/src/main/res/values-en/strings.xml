@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Lucía García</string>
+    <string name="app_name">Lucía García BeautyBoard</string>
     <string name="default_web_client_id">701396161148-mfd6idsjg4r8v6rcfen4tftai23gmlri.apps.googleusercontent.com</string>
     <string-array name="horas_disponibles">
         <item>10:00</item>
@@ -67,7 +67,8 @@
     <!-- XML Consultar Citas -->
     <string name="no_tiene_citas_disponibles">You have no available appointments</string>
     <string name="pulse_anular_cita">Tap on an appointment if you want to cancel it</string>
-    <string name="buscar">Search</string>
+    <string name="buscar">Search by user</string>
+    <string name="filtrar_fecha">Search by date</string>
     <string name="volver">Return to see all appointments</string>
     <string name="servicio">Service:</string>
     <string name="precio">Price:</string>
@@ -141,7 +142,8 @@
     <string name="consultar_todas_las_citas">Check all appointments</string>
     <string name="error_al_buscar_la_cita">Error finding appointment</string>
     <string name="anular_cita">Cancel Appointment</string>
-    <string name="desea_anular_cita">Do you want to cancel this appointment?</string>
+    <string name="desea_anular_citaClient">Do you want to cancel this appointment?</string>
+    <string name="desea_anular_cita">Do you want to cancel this appointment? \n\nUser: </string>
     <string name="si">Yes</string>
     <string name="cita_anulada_exitosamente">Appointment canceled successfully</string>
     <string name="error_al_anular_la_cita">Error canceling appointment</string>
