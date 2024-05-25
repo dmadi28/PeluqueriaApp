@@ -1,3 +1,21 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase GenerarQrActivity gestiona la funcionalidad relacionada con la generación de códigos QR de descuento para la aplicación "Lucía García BeautyBoard" desde la perspectiva del administrador.
+
+Esta actividad incluye las siguientes funcionalidades:
+- Generar códigos QR de descuento con porcentaje y duración seleccionados por el usuario.
+- Mostrar el código QR generado en una ImageView.
+- Compartir el código QR generado a través de otras aplicaciones.
+
+La actividad también incluye un menú lateral con opciones de navegación a otras partes de la aplicación, como la consulta de citas, información adicional y funciones de administración de usuarios.
+Además, la actividad gestiona el cierre de sesión del administrador y evita que la aplicación se cierre accidentalmente al presionar el botón de retroceso.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.app.Activity;
@@ -16,20 +34,17 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;

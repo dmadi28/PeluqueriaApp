@@ -1,3 +1,18 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase Usuario representa un usuario en la aplicación Lucía García BeautyBoard.
+
+Cada usuario tiene los siguientes atributos: email (la dirección de correo electrónico del usuario), genero (el género del usuario), nombre (el nombre del usuario), rol (el rol del usuario, como administrador o cliente) y telefono (el número de teléfono del usuario).
+
+La clase incluye un constructor vacío necesario para la deserialización de Firebase, así como un constructor que inicializa todos los atributos del usuario.
+Además, se proporcionan métodos getters y setters para acceder y modificar cada atributo del usuario.
+*/
+
 package com.example.peluqueriaapp;
 
 public class Usuario {

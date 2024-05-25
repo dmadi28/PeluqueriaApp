@@ -1,3 +1,21 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase ConsultarActivityClient es responsable de gestionar la interfaz de usuario para consultar todas las citas desde una perspectiva de cliente en la aplicación "Lucía García BeautyBoard".
+
+Esta actividad incluye funcionalidades como:
+- Mostrar una lista de todas las citas disponibles para el cliente activo.
+- Permitir la anulación de citas programadas por el cliente.
+- Implementar un gesto de deslizamiento para actualizar la lista de citas.
+
+La actividad también incluye un menú lateral con opciones de navegación a otras partes de la aplicación, como la página principal, información adicional y funciones de cierre de sesión.
+Además, la actividad gestiona el cierre de sesión del cliente y evita que la aplicación se cierre accidentalmente al presionar el botón de retroceso.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.app.Activity;
@@ -14,17 +32,14 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-
 import java.util.List;
 
 public class ConsultarActivityClient extends AppCompatActivity implements View.OnClickListener {

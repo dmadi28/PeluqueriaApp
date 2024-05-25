@@ -1,3 +1,19 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase RegisterActivity es responsable de gestionar el registro de nuevos usuarios en la aplicación. Permite a los usuarios ingresar sus datos personales, como nombre, correo electrónico, contraseña y número de teléfono, y enviar esta información al sistema para crear una cuenta.
+
+Funcionalidades:
+- Filtrar solo letras en el campo de nombre.
+- Validar los campos del formulario antes de enviar la solicitud de registro.
+- Verificar el formato del correo electrónico y del número de teléfono.
+- Utilizar FirebaseManager para realizar el registro del usuario.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.os.Bundle;

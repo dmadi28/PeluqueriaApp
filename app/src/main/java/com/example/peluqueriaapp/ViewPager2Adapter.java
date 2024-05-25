@@ -1,10 +1,24 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase ViewPager2Adapter es un adaptador personalizado diseñado para ser utilizado con ViewPager2 en Android.
+Se utiliza para mostrar un carrusel de imágenes en un ViewPager2.
+
+Funcionalidades:
+- Crea una vista para cada imagen en la lista.
+- Establece la imagen en la vista correspondiente.
+- Configura la escala de la imagen para llenar el espacio y recortar los bordes.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
 
 public class ViewPager2Adapter extends RecyclerView.Adapter<ViewPager2Adapter.ViewHolder> {

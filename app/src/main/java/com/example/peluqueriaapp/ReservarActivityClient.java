@@ -1,3 +1,24 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase ReservarActivityClient es una actividad que permite a los clientes realizar reservas de citas.
+Los clientes pueden seleccionar un servicio, una fecha y una hora para la cita, así como agregar anotaciones opcionales.
+La actividad utiliza Firebase para gestionar las reservas de citas y los usuarios.
+
+Funcionalidades:
+- Mostrar una lista de servicios disponibles.
+- Seleccionar una fecha y una hora para la cita.
+- Validar la disponibilidad de horas para la cita en la fecha seleccionada.
+- Mostrar notificaciones de reserva.
+
+La actividad también incluye un menú lateral con opciones de navegación a otras partes de la aplicación, como la consulta de citas, información adicional y funciones de cierre de sesión.
+Además, la actividad gestiona el cierre de sesión del cliente y evita que la aplicación se cierre accidentalmente al presionar el botón de retroceso.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.annotation.SuppressLint;
@@ -25,18 +46,15 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -334,6 +352,7 @@ public class ReservarActivityClient extends AppCompatActivity implements View.On
         radioGroupHoras.removeAllViews();
 
         Calendar fechaActual = Calendar.getInstance();
+        boolean esMismoDia = esMismoDia(fechaActual, fechaElegida);
 
         // Verificar si el día seleccionado es sábado para reducir la jornada
         if (fechaElegida.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
@@ -342,8 +361,10 @@ public class ReservarActivityClient extends AppCompatActivity implements View.On
             for (String hora : horasDisponibles) {
                 // Obtener la hora seleccionada
                 int horaSeleccionada = Integer.parseInt(hora.split(":")[0]);
-                // Verificar si la hora es menor o igual a 13:00 y no está reservada
-                if (horaSeleccionada <= 13 && !horasReservadas.contains(hora)) {
+                boolean esHoraPasada = esMismoDia && horaSeleccionada <= fechaActual.get(Calendar.HOUR_OF_DAY);
+
+                // Verificar si la hora es menor o igual a 13:00, no está reservada y no ha pasado
+                if (horaSeleccionada <= 13 && !horasReservadas.contains(hora) && !esHoraPasada) {
                     RadioButton radioButton = new RadioButton(ReservarActivityClient.this);
                     radioButton.setText(hora);
                     radioGroupHoras.addView(radioButton);
@@ -364,24 +385,13 @@ public class ReservarActivityClient extends AppCompatActivity implements View.On
 
             for (String hora : horasDisponibles) {
                 int horaSeleccionada = Integer.parseInt(hora.split(":")[0]);
+                boolean esHoraPasada = esMismoDia && horaSeleccionada <= fechaActual.get(Calendar.HOUR_OF_DAY);
 
-                if (fechaElegida.get(Calendar.YEAR) == fechaActual.get(Calendar.YEAR) &&
-                        fechaElegida.get(Calendar.MONTH) == fechaActual.get(Calendar.MONTH) &&
-                        fechaElegida.get(Calendar.DAY_OF_MONTH) == fechaActual.get(Calendar.DAY_OF_MONTH)) {
-                    int horaActual = fechaActual.get(Calendar.HOUR_OF_DAY);
-                    if (horaSeleccionada > horaActual && !horasReservadas.contains(hora)) {
-                        RadioButton radioButton = new RadioButton(ReservarActivityClient.this);
-                        radioButton.setText(hora);
-                        radioGroupHoras.addView(radioButton);
-                        alMenosUnaHoraDisponible = true;
-                    }
-                } else {
-                    if (!horasReservadas.contains(hora)) {
-                        RadioButton radioButton = new RadioButton(ReservarActivityClient.this);
-                        radioButton.setText(hora);
-                        radioGroupHoras.addView(radioButton);
-                        alMenosUnaHoraDisponible = true;
-                    }
+                if (!esHoraPasada && !horasReservadas.contains(hora)) {
+                    RadioButton radioButton = new RadioButton(ReservarActivityClient.this);
+                    radioButton.setText(hora);
+                    radioGroupHoras.addView(radioButton);
+                    alMenosUnaHoraDisponible = true;
                 }
             }
 

@@ -1,7 +1,27 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase LoginActivity es responsable de gestionar el proceso de inicio de sesión de los usuarios en la aplicación. Permite a los usuarios iniciar sesión utilizando su correo electrónico y contraseña o mediante el inicio de sesión con Google.
+
+Funcionalidades:
+- Verificar el inicio de sesión utilizando correo electrónico y contraseña.
+- Verificar el inicio de sesión utilizando Google Sign-In.
+- Permitir a los usuarios restablecer su contraseña en caso de olvido.
+- Redirigir a los usuarios a la pantalla de registro si desean crear una cuenta nueva.
+- Mostrar mensajes de error y éxito en el inicio de sesión.
+- Controlar los permisos necesarios para el funcionamiento de la aplicación.
+*/
+
 package com.example.peluqueriaapp;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,9 +30,9 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -22,6 +42,7 @@ import com.google.android.gms.tasks.Task;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final int PERMISSION_REQUEST_CODE = 123;
     int RC_SIGN_IN = 1;
     String TAG = "GoogleSignIn";
     EditText textInputEditTextEmail, textInputEditTextPassword;
@@ -52,6 +73,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setupViews();
         // Configurar OnClickListener de los botones
         setupOnClickListeners();
+
+        // Solicitar permisos
+        solicitarPermisos();
     }
 
     private void setupViews() {
@@ -68,6 +92,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         buttonLoginGoogle.setOnClickListener(this);
         buttonRegister.setOnClickListener(this);
         textViewForgotPassword.setOnClickListener(this);
+    }
+
+    private void solicitarPermisos() {
+        String[] permisos = {
+                Manifest.permission.CAMERA,
+                Manifest.permission.POST_NOTIFICATIONS
+        };
+
+        if (!tieneTodosLosPermisos(permisos)) {
+            ActivityCompat.requestPermissions(this, permisos, PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    private boolean tieneTodosLosPermisos(String[] permisos) {
+        for (String permiso : permisos) {
+            if (ContextCompat.checkSelfPermission(this, permiso) != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

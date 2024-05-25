@@ -1,3 +1,22 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase ConsultarActivityAdmin es responsable de gestionar la interfaz de usuario para consultar todas las citas desde una perspectiva administrativa en la aplicación "Lucía García BeautyBoard".
+
+Esta actividad incluye funcionalidades como:
+- Mostrar una lista de todas las citas disponibles.
+- Filtrar citas por usuario y fecha.
+- Permitir la anulación de citas.
+- Implementar un gesto de deslizamiento para actualizar la lista de citas.
+
+La actividad también incluye un menú lateral con opciones de navegación a otras partes de la aplicación, como la consulta de citas, información adicional y funciones de administración de usuarios.
+Además, la actividad gestiona el cierre de sesión del administrador y evita que la aplicación se cierre accidentalmente al presionar el botón de retroceso.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.app.Activity;
@@ -18,18 +37,15 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;

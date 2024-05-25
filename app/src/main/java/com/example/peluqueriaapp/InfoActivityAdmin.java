@@ -1,3 +1,22 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase InfoActivityAdmin gestiona la interfaz de usuario para mostrar información y contacto de la aplicación "Lucía García BeautyBoard" desde una perspectiva administrativa.
+
+Esta actividad incluye funcionalidades como:
+- Visualizar información de contacto, ubicación y equipo.
+- Mostrar imágenes de la peluquería en un ViewPager con auto-scroll.
+- Permitir la apertura de Google Maps para ver la ubicación del salón.
+- Ofrecer enlaces directos a WhatsApp, Instagram y Facebook.
+
+La actividad también incluye un menú lateral con opciones de navegación a otras partes de la aplicación, como la consulta de citas, información adicional y funciones de administración de usuarios.
+Además, la actividad gestiona el cierre de sesión del administrador y evita que la aplicación se cierre accidentalmente al presionar el botón de retroceso.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.app.Activity;
@@ -12,13 +31,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.viewpager2.widget.ViewPager2;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -27,7 +44,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,3 +1,20 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase AddAdminActivity es responsable de manejar la funcionalidad relacionada con la adición de nuevos administradores en la aplicación "Lucía García BeautyBoard".
+
+Esta actividad incluye las siguientes funcionalidades:
+- Mostrar una lista de usuarios con rol de usuario para seleccionar como nuevos administradores.
+- Permitir la selección de un usuario y cambiar su rol a administrador.
+
+La actividad también incluye un menú lateral con opciones de navegación a otras partes de la aplicación, como la consulta de citas, información adicional y funciones de administración de usuarios.
+Además, la actividad gestiona el cierre de sesión del administrador y evita que la aplicación se cierre accidentalmente al presionar el botón de retroceso.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.app.Activity;
@@ -5,24 +22,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-
 import java.util.List;
 
 public class AddAdminActivity extends AppCompatActivity implements View.OnClickListener {
@@ -102,14 +114,17 @@ public class AddAdminActivity extends AppCompatActivity implements View.OnClickL
                             android.R.layout.simple_spinner_item, usuarios);
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     spinnerUsuarios.setAdapter(adapter);
+                    buttonAddAdmin.setEnabled(true); // Habilitar el botón
                 } else {
                     Log.e("AddAdminActivity", "No se encontraron usuarios con rol 'usuario'.");
+                    buttonAddAdmin.setEnabled(false); // Deshabilitar el botón
                 }
             }
 
             @Override
             public void onError(String errorMessage) {
                 Log.e("AddAdminActivity", "Error al obtener usuarios con rol 'usuario': " + errorMessage);
+                buttonAddAdmin.setEnabled(false); // Deshabilitar el botón en caso de error
             }
         });
     }

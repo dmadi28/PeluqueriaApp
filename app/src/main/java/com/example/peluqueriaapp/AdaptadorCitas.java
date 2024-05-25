@@ -1,3 +1,18 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase AdaptadorCitas es un adaptador personalizado diseñado para mostrar una lista de citas en un ListView. Cada elemento de la lista representa una cita con detalles como servicio, precio, fecha, hora y anotaciones.
+
+Funcionalidades:
+- Inflar el diseño de cada elemento de la lista a partir de un archivo XML.
+- Asignar los valores correspondientes de cada cita a las vistas del elemento de la lista.
+- Formatear el precio de la cita con dos decimales y el símbolo de euro.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.content.Context;
@@ -6,9 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
-
 import java.text.DecimalFormat;
 import java.util.List;
 

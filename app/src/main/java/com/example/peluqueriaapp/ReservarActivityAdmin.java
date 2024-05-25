@@ -1,3 +1,25 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase ReservarActivityAdmin es una actividad que permite a un administrador realizar reservas de citas para los usuarios.
+El administrador puede seleccionar un usuario, un servicio, una fecha y una hora para la cita, así como agregar anotaciones opcionales.
+La actividad utiliza Firebase para gestionar las reservas de citas y los usuarios.
+
+Funcionalidades:
+- Mostrar una lista de usuarios registrados.
+- Mostrar una lista de servicios disponibles.
+- Seleccionar una fecha y una hora para la cita.
+- Validar la disponibilidad de horas para la cita en la fecha seleccionada.
+- Mostrar notificaciones de reserva.
+
+La actividad también incluye un menú lateral con opciones de navegación a otras partes de la aplicación, como la consulta de citas, información adicional y funciones de administración de usuarios.
+Además, la actividad gestiona el cierre de sesión del administrador y evita que la aplicación se cierre accidentalmente al presionar el botón de retroceso.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.annotation.SuppressLint;
@@ -23,18 +45,15 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -376,34 +395,36 @@ public class ReservarActivityAdmin extends AppCompatActivity implements View.OnC
         radioGroupHoras.removeAllViews();
 
         Calendar fechaActual = Calendar.getInstance();
+        boolean alMenosUnaHoraDisponible = false;
 
         // Verificar si el día seleccionado es sábado para reducir la jornada
         if (fechaElegida.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-            boolean alMenosUnaHoraDisponible = false;
-
             for (String hora : horasDisponibles) {
-                // Obtener la hora seleccionada
                 int horaSeleccionada = Integer.parseInt(hora.split(":")[0]);
-                // Verificar si la hora es menor o igual a 13:00 y no está reservada
-                if (horaSeleccionada <= 13 && !horasReservadas.contains(hora)) {
-                    RadioButton radioButton = new RadioButton(ReservarActivityAdmin.this);
-                    radioButton.setText(hora);
-                    radioGroupHoras.addView(radioButton);
-                    alMenosUnaHoraDisponible = true;
+
+                if (horaSeleccionada <= 15 && !horasReservadas.contains(hora)) {
+                    if (fechaElegida.get(Calendar.YEAR) == fechaActual.get(Calendar.YEAR) &&
+                            fechaElegida.get(Calendar.MONTH) == fechaActual.get(Calendar.MONTH) &&
+                            fechaElegida.get(Calendar.DAY_OF_MONTH) == fechaActual.get(Calendar.DAY_OF_MONTH)) {
+                        int horaActual = fechaActual.get(Calendar.HOUR_OF_DAY);
+                        if (horaSeleccionada > horaActual) {
+                            RadioButton radioButton = new RadioButton(this);
+                            radioButton.setText(hora);
+                            radioGroupHoras.addView(radioButton);
+                            alMenosUnaHoraDisponible = true;
+                        }
+                    } else {
+                        RadioButton radioButton = new RadioButton(this);
+                        radioButton.setText(hora);
+                        radioGroupHoras.addView(radioButton);
+                        alMenosUnaHoraDisponible = true;
+                    }
                 }
             }
-
-            if (!alMenosUnaHoraDisponible) {
-                mostrarMensajeNoDisponibles();
-                return;
-            }
         } else if (fechaElegida.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY || fechaElegida.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
-            // Si es domingo o lunes, mostrar mensaje de no disponibles
             mostrarMensajeNoDisponibles();
             return;
         } else { // Para otros días de la semana
-            boolean alMenosUnaHoraDisponible = false;
-
             for (String hora : horasDisponibles) {
                 int horaSeleccionada = Integer.parseInt(hora.split(":")[0]);
 
@@ -412,28 +433,27 @@ public class ReservarActivityAdmin extends AppCompatActivity implements View.OnC
                         fechaElegida.get(Calendar.DAY_OF_MONTH) == fechaActual.get(Calendar.DAY_OF_MONTH)) {
                     int horaActual = fechaActual.get(Calendar.HOUR_OF_DAY);
                     if (horaSeleccionada > horaActual && !horasReservadas.contains(hora)) {
-                        RadioButton radioButton = new RadioButton(ReservarActivityAdmin.this);
+                        RadioButton radioButton = new RadioButton(this);
                         radioButton.setText(hora);
                         radioGroupHoras.addView(radioButton);
                         alMenosUnaHoraDisponible = true;
                     }
                 } else {
                     if (!horasReservadas.contains(hora)) {
-                        RadioButton radioButton = new RadioButton(ReservarActivityAdmin.this);
+                        RadioButton radioButton = new RadioButton(this);
                         radioButton.setText(hora);
                         radioGroupHoras.addView(radioButton);
                         alMenosUnaHoraDisponible = true;
                     }
                 }
             }
-
-            if (!alMenosUnaHoraDisponible) {
-                mostrarMensajeNoDisponibles();
-                return;
-            }
         }
 
-        // Si se han agregado botones de radio, mostrar las horas disponibles y ocultar los elementos relacionados con la selección de servicios, fechas y usuarios
+        if (!alMenosUnaHoraDisponible) {
+            mostrarMensajeNoDisponibles();
+            return;
+        }
+
         findViewById(R.id.cvCalendario).setVisibility(View.GONE);
         findViewById(R.id.textViewServicio).setVisibility(View.GONE);
         findViewById(R.id.spinnerServicios).setVisibility(View.GONE);

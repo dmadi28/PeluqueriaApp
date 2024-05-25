@@ -1,3 +1,25 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase FirebaseManager es responsable de manejar la interacción con Firebase para autenticar usuarios, registrar citas y obtener información relevante de la base de datos.
+
+Esta clase facilita varias funcionalidades esenciales, incluyendo:
+- Inicio de sesión con correo electrónico y contraseña.
+- Inicio de sesión con Google.
+- Registro de usuarios.
+- Obtención del correo electrónico del usuario actual.
+- Registro de citas en la base de datos.
+- Obtención del nombre de usuario a partir del correo electrónico.
+- Manejo de cierre de sesión de usuarios.
+
+La implementación de FirebaseManager refleja una estructura organizada y eficiente para la gestión de datos y la autenticación de usuarios dentro de la aplicación "Lucía García BeautyBoard".
+Su integración proporciona una base sólida para la funcionalidad de reserva de citas y la gestión de usuarios en el contexto del proyecto.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.app.Activity;
@@ -5,24 +27,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.FirebaseNetworkException;
-
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -30,7 +47,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

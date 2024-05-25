@@ -1,3 +1,22 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase QrActivityAdmin maneja la funcionalidad relacionada con la generación y escaneo de códigos QR para la aplicación "Lucía García BeautyBoard" desde la perspectiva del administrador.
+
+Esta actividad incluye las siguientes funcionalidades:
+- Generar códigos QR de descuento.
+- Escanear códigos QR para aplicar descuentos.
+- Verificar la validez y la fecha de expiración de los códigos QR escaneados.
+- Mostrar la información de los códigos QR escaneados en un AlertDialog.
+
+La actividad también incluye un menú lateral con opciones de navegación a otras partes de la aplicación, como la consulta de citas, información adicional y funciones de administración de usuarios.
+Además, la actividad gestiona el cierre de sesión del administrador y evita que la aplicación se cierre accidentalmente al presionar el botón de retroceso.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.app.Activity;
@@ -11,19 +30,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

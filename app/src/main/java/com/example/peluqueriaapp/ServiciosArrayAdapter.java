@@ -1,3 +1,19 @@
+/*
+Proyecto: Lucía García BeautyBoard
+--------------------------------------------------------------------
+Autor: David Maestre Díaz
+--------------------------------------------------------------------
+Versión: 1.0
+--------------------------------------------------------------------
+Descripción: La clase ServiciosArrayAdapter es una extensión de ArrayAdapter diseñada específicamente para adaptar la visualización de los elementos en un Spinner que contiene una lista de servicios.
+
+Funcionalidades:
+- Personaliza la apariencia de los elementos en el Spinner.
+- Habilita o deshabilita los elementos correspondientes a las categorías "Servicios de peluquería" y "Servicios de estética".
+- Establece el tamaño, la alineación, el color y el estilo del texto.
+- Resalta las categorías con un fondo diferente y subrayado.
+*/
+
 package com.example.peluqueriaapp;
 
 import android.content.Context;
@@ -9,10 +25,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import java.util.List;
 
 public class ServiciosArrayAdapter extends ArrayAdapter<String> {
