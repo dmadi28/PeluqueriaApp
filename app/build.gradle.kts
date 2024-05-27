@@ -35,6 +35,8 @@ android {
 }
 
 dependencies {
+    implementation("com.sun.mail:android-mail:1.6.4")
+    implementation ("com.sun.mail:android-activation:1.6.4")
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("com.google.firebase:firebase-auth")

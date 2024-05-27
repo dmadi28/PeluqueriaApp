@@ -147,6 +147,17 @@
     <string name="si">Yes</string>
     <string name="cita_anulada_exitosamente">Appointment canceled successfully</string>
     <string name="error_al_anular_la_cita">Error canceling appointment</string>
+    <string name="mensaje_anulacion_1">"Dear "</string>
+    <string name="mensaje_anulacion_2">We inform you that your appointment has been canceled.\n\n</string>
+    <string name="mensaje_anulacion_3">Appointment details:\n</string>
+    <string name="mensaje_anulacion_4">"Date: "</string>
+    <string name="mensaje_anulacion_5">"Service: "</string>
+    <string name="mensaje_anulacion_6">"Notes: "</string>
+    <string name="mensaje_anulacion_7">\nIf you have any questions, please contact us.\n\n</string>
+    <string name="mensaje_anulacion_8">Sincerely,\n</string>
+    <string name="mensaje_anulacion_9">Lucía García BeautyBoard</string>
+    <string name="subject_mensaje_anulacion">Appointment Canceled</string>
+    <string name="no_email_clients">No email clients installed.</string>
     <!-- ConsultarActivityClient -->
     <string name="consultar_citas_de">Consult appointments of: \n</string>
     <!-- InfoActivity -->

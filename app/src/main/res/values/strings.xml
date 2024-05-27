@@ -147,6 +147,17 @@
     <string name="si">Sí</string>
     <string name="cita_anulada_exitosamente">Cita anulada exitosamente</string>
     <string name="error_al_anular_la_cita">Error al anular la cita</string>
+    <string name="mensaje_anulacion_1">"Estimado/a "</string>
+    <string name="mensaje_anulacion_2">Le informamos que su cita ha sido anulada.\n\n</string>
+    <string name="mensaje_anulacion_3">Detalles de la cita:\n</string>
+    <string name="mensaje_anulacion_4">"Fecha: "</string>
+    <string name="mensaje_anulacion_5">"Servicio: "</string>
+    <string name="mensaje_anulacion_6">"Anotaciones: "</string>
+    <string name="mensaje_anulacion_7">\nSi tiene alguna duda, por favor contacte con nosotros.\n\n</string>
+    <string name="mensaje_anulacion_8">Atentamente,\n</string>
+    <string name="mensaje_anulacion_9">Lucía García BeautyBoard</string>
+    <string name="subject_mensaje_anulacion">Cita anulada</string>
+    <string name="no_email_clients">No tiene un cliente de email instalado.</string>
     <!-- ConsultarActivityClient -->
     <string name="consultar_citas_de">Consultar citas de: \n</string>
     <!-- InfoActivity -->

@@ -46,11 +46,14 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ConsultarActivityAdmin extends AppCompatActivity implements View.OnClickListener {
 
@@ -328,9 +331,10 @@ public class ConsultarActivityAdmin extends AppCompatActivity implements View.On
                     public void onSuccess() {
                         // Mostrar un mensaje de éxito
                         mostrarToast(getString(R.string.cita_anulada_exitosamente));
+                        // Enviar correo de anulación con detalles de la cita
+                        enviarCorreoAnulacion(cita);
+
                         // Actualizar la lista de citas
-                        // Si las citas están filtradas, volver a cargarlas
-                        // Si no, volver a cargar todas las citas
                         if (isFiltered) {
                             cargarCitasFiltradas();
                         } else {
@@ -348,6 +352,66 @@ public class ConsultarActivityAdmin extends AppCompatActivity implements View.On
         });
         builder.setNegativeButton("No", null);
         builder.show();
+    }
+
+    // Método para construir el mensaje de anulación de la cita
+    private String construirMensajeAnulacion(Cita cita) {
+        StringBuilder mensaje = new StringBuilder();
+        mensaje.append(getString(R.string.mensaje_anulacion_1)).append(cita.getUsuario()).append(",\n\n")
+                .append(getString(R.string.mensaje_anulacion_2))
+                .append(getString(R.string.mensaje_anulacion_3));
+
+        // Formatear la fecha
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            Date date = inputFormat.parse(cita.getFecha());
+            String formattedDate = outputFormat.format(date);
+            mensaje.append(getString(R.string.mensaje_anulacion_4)).append(formattedDate).append("\n");
+        } catch (ParseException e) {
+            e.printStackTrace();
+            mensaje.append(getString(R.string.mensaje_anulacion_4)).append(cita.getFecha()).append("\n");
+        }
+
+        mensaje.append(getString(R.string.mensaje_anulacion_5)).append(cita.getServicio()).append("\n");
+
+        // Añadir anotaciones si no están vacías
+        if (cita.getAnotaciones() != null && !cita.getAnotaciones().isEmpty()) {
+            mensaje.append(getString(R.string.mensaje_anulacion_6));
+            mensaje.append(cita.getAnotaciones());
+            mensaje.append("\n");
+        }
+
+        mensaje.append(getString(R.string.mensaje_anulacion_7))
+                .append(getString(R.string.mensaje_anulacion_8))
+                .append(getString(R.string.mensaje_anulacion_9));
+
+        return mensaje.toString();
+    }
+
+    // Método para enviar correo de anulación con detalles de la cita
+    private void enviarCorreoAnulacion(Cita cita) {
+        String email = cita.getUsuario();
+        String subject = getString(R.string.subject_mensaje_anulacion);
+        String message = construirMensajeAnulacion(cita);
+        String[] addresses = {email};
+        composeEmail(addresses, subject, message);
+    }
+
+    // Método para enviar correo electrónico
+    private void composeEmail(String[] addresses, String subject, String message) {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_EMAIL, addresses);
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, message);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        } else {
+            Log.e("composeEmail", "No email clients installed.");
+            mostrarToast(getString(R.string.no_email_clients));
+        }
     }
 
     private void crearAdaptador() {
